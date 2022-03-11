@@ -1,6 +1,6 @@
 package com.lehaine.rune.engine
 
-import com.lehaine.rune.engine.node2d.renderable.entity.EntityNode
+import com.lehaine.rune.engine.node.node2d.renderable.entity.EntityNode
 import com.lehaine.littlekt.graphics.OrthographicCamera
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.math.clamp
@@ -8,7 +8,7 @@ import com.lehaine.littlekt.math.dist
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.cosine
 import com.lehaine.littlekt.math.interpolate
-import com.lehaine.rune.engine.node2d.CooldownNode
+import com.lehaine.rune.engine.node.node2d.CooldownNode
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin

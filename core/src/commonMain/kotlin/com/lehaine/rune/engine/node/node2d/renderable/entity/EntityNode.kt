@@ -1,4 +1,4 @@
-package com.lehaine.rune.engine.node2d.renderable.entity
+package com.lehaine.rune.engine.node.node2d.renderable.entity
 
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
@@ -11,9 +11,9 @@ import com.lehaine.littlekt.graphics.Textures
 import com.lehaine.littlekt.math.interpolate
 import com.lehaine.littlekt.util.*
 import com.lehaine.rune.engine.distPxTo
-import com.lehaine.rune.engine.node2d.CooldownNode
-import com.lehaine.rune.engine.node2d.FixedUpdaterNode
-import com.lehaine.rune.engine.node2d.renderable.AnimatedSprite
+import com.lehaine.rune.engine.node.node2d.CooldownNode
+import com.lehaine.rune.engine.node.node2d.FixedUpdaterNode
+import com.lehaine.rune.engine.node.node2d.renderable.AnimatedSprite
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract

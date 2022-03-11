@@ -1,4 +1,4 @@
-package com.lehaine.rune.engine.node2d.renderable
+package com.lehaine.rune.engine.node.node2d.renderable
 
 import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graphics.Color

@@ -1,4 +1,4 @@
-package com.lehaine.rune.engine.node2d
+package com.lehaine.rune.engine.node
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.util.datastructure.Pool

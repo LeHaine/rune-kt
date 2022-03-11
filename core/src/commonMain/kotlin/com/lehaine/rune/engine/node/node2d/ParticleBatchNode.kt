@@ -1,4 +1,4 @@
-package com.lehaine.rune.engine.node2d
+package com.lehaine.rune.engine.node.node2d
 
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node

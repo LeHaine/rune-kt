@@ -7,7 +7,7 @@ import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
-import com.lehaine.rune.engine.node2d.renderable.Renderable2D
+import com.lehaine.rune.engine.node.node2d.renderable.Renderable2D
 
 /**
  * @author Colton Daily
