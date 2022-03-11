@@ -1,4 +1,4 @@
-package com.lehaine.rune.engine.node
+package com.lehaine.rune.engine.node2d.renderable.entity
 
 import com.lehaine.rune.engine.GameLevel
 import com.lehaine.littlekt.graph.SceneGraph

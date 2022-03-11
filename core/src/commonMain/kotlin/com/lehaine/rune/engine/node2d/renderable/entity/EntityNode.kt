@@ -1,15 +1,19 @@
-package com.lehaine.rune.engine.node
+package com.lehaine.rune.engine.node2d.renderable.entity
 
-import com.lehaine.rune.engine.CooldownComponent
-import com.lehaine.rune.engine.distPxTo
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
-import com.lehaine.littlekt.graph.node.node2d.Node2D
-import com.lehaine.littlekt.graphics.*
+import com.lehaine.littlekt.graphics.Batch
+import com.lehaine.littlekt.graphics.Camera
+import com.lehaine.littlekt.graphics.TextureSlice
+import com.lehaine.littlekt.graphics.Textures
 import com.lehaine.littlekt.math.interpolate
 import com.lehaine.littlekt.util.*
+import com.lehaine.rune.engine.distPxTo
+import com.lehaine.rune.engine.node2d.CooldownNode
+import com.lehaine.rune.engine.node2d.FixedUpdaterNode
+import com.lehaine.rune.engine.node2d.renderable.AnimatedSprite
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -26,12 +30,15 @@ inline fun Node.entity(gridCellSize: Int, callback: @SceneGraphDslMarker EntityN
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun SceneGraph<*>.entity(gridCellSize: Int, callback: @SceneGraphDslMarker EntityNode.() -> Unit = {}): EntityNode {
+inline fun SceneGraph<*>.entity(
+    gridCellSize: Int,
+    callback: @SceneGraphDslMarker EntityNode.() -> Unit = {}
+): EntityNode {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return root.entity(gridCellSize, callback)
 }
 
-open class EntityNode(val gridCellSize: Int) : Node2D() {
+open class EntityNode(val gridCellSize: Int) : AnimatedSprite() {
     var cx: Int = 0
     var cy: Int = 0
     var xr: Float = 0.5f
@@ -48,9 +55,6 @@ open class EntityNode(val gridCellSize: Int) : Node2D() {
 
     var width: Float = gridCellSize.toFloat()
     var height: Float = gridCellSize.toFloat()
-
-    var anchorX: Float = 0.5f
-    var anchorY: Float = 1f
 
     val innerRadius get() = min(width, height) * 0.5
     val outerRadius get() = max(width, height) * 0.5
@@ -122,17 +126,17 @@ open class EntityNode(val gridCellSize: Int) : Node2D() {
      */
     val fixedProgressionRatio: Float get() = fixedUpdater?.fixedProgressionRatio ?: 1f
 
-    val cooldown = CooldownComponent()
+    val cooldown by lazy { CooldownNode().addTo(this) }
 
     var sprite: TextureSlice = Textures.white
-    val anim = AnimationPlayer<TextureSlice>().apply {
-        onFrameChange = {
-            sprite = currentAnimation?.get(it) ?: sprite
-        }
-    }
 
     val onFixedUpdate: Signal = signal()
     val onPostUpdate: SingleSignal<Duration> = signal1v()
+
+    init {
+        anchorX = 0.5f
+        anchorY = 1f
+    }
 
     override fun onAddedToScene() {
         findClosestFixedUpdater()
@@ -167,8 +171,8 @@ open class EntityNode(val gridCellSize: Int) : Node2D() {
     }
 
     override fun update(dt: Duration) {
+        super.update(dt)
         cooldown.update(dt)
-        anim.update(dt)
     }
 
     open fun fixedUpdate() {

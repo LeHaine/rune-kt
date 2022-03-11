@@ -1,5 +1,6 @@
-package com.lehaine.rune.engine
+package com.lehaine.rune.engine.node2d
 
+import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.util.datastructure.Pool
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -22,7 +23,7 @@ private data class CooldownTimer(
     }
 }
 
-class CooldownComponent : UpdateComponent {
+class CooldownNode : Node() {
     private val cooldownTimerPool = Pool(
         reset = {
             it.elapsed = 0.milliseconds

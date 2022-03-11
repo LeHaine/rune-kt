@@ -2,7 +2,7 @@ package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.math.castRay
 import com.lehaine.littlekt.math.dist
-import com.lehaine.rune.engine.node.EntityNode
+import com.lehaine.rune.engine.node2d.renderable.entity.EntityNode
 import kotlin.math.atan2
 import kotlin.time.Duration
 

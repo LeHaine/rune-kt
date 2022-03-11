@@ -1,6 +1,6 @@
-package com.lehaine.rune.engine
+package com.lehaine.rune.engine.ext
 
-import com.lehaine.rune.engine.node.EntityNode
+import com.lehaine.rune.engine.node2d.renderable.entity.EntityNode
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
 import kotlin.time.Duration

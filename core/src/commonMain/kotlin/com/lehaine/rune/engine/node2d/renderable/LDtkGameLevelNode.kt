@@ -1,16 +1,15 @@
-package com.lehaine.rune.engine.node
+package com.lehaine.rune.engine.node2d.renderable
 
-import com.lehaine.rune.engine.GameLevel
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
-import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkIntGridLayer
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkLevel
 import com.lehaine.littlekt.math.clamp
+import com.lehaine.rune.engine.GameLevel
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -33,8 +32,14 @@ inline fun <LevelMark> SceneGraph<*>.ldtkLevel(
     return root.ldtkLevel(level, callback)
 }
 
-open class LDtkGameLevelNode<LevelMark>(var level: LDtkLevel) : Node2D(), GameLevel<LevelMark> {
+open class LDtkGameLevelNode<LevelMark>(var level: LDtkLevel) : Renderable2D(), GameLevel<LevelMark> {
     override var gridSize: Int = 16
+
+    override val renderWidth: Float
+        get() = level.pxWidth.toFloat()
+
+    override val renderHeight: Float
+        get() = level.pxHeight.toFloat()
 
     val levelWidth get() = level["Collisions"].gridWidth
     val levelHeight get() = level["Collisions"].gridHeight

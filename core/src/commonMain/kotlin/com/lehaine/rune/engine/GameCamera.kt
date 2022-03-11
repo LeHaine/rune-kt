@@ -1,6 +1,6 @@
 package com.lehaine.rune.engine
 
-import com.lehaine.rune.engine.node.EntityNode
+import com.lehaine.rune.engine.node2d.renderable.entity.EntityNode
 import com.lehaine.littlekt.graphics.OrthographicCamera
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.math.clamp
@@ -8,6 +8,7 @@ import com.lehaine.littlekt.math.dist
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.cosine
 import com.lehaine.littlekt.math.interpolate
+import com.lehaine.rune.engine.node2d.CooldownNode
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -31,7 +32,7 @@ class GameCamera(
     private var bumpX = 0f
     private var bumpY = 0f
 
-    private val cd = CooldownComponent()
+    private val cd = CooldownNode()
 
     fun update(dt: Duration) {
         cd.update(dt)

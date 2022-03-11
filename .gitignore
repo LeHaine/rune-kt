@@ -62,3 +62,6 @@ libgdx-*.zip.MD5
 .httpCache
 
 kotlin-js-store
+
+#rune specific
+core/src/jvmMain/kotlin/com/lehaine/rune/Test.kt

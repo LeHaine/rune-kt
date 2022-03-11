@@ -2,6 +2,9 @@ package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.Scene
+import com.lehaine.rune.engine.ext.UpdateComponent
+import com.lehaine.rune.engine.ext.createFixedInterpUpdater
+import com.lehaine.rune.engine.ext.createTmodUpdater
 import kotlin.time.Duration
 
 

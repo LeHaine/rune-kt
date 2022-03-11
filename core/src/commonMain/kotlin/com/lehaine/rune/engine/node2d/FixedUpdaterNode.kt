@@ -1,4 +1,4 @@
-package com.lehaine.rune.engine.node
+package com.lehaine.rune.engine.node2d
 
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
@@ -6,6 +6,7 @@ import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.util.milliseconds
 import com.lehaine.littlekt.util.seconds
+import com.lehaine.rune.engine.node2d.renderable.entity.EntityNode
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract

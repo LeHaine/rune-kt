@@ -1,6 +1,5 @@
 package com.lehaine.rune.engine.render
 
-import com.lehaine.rune.engine.node.Renderable2D
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
@@ -8,6 +7,7 @@ import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
+import com.lehaine.rune.engine.node2d.renderable.Renderable2D
 
 /**
  * @author Colton Daily
@@ -26,13 +26,7 @@ class DefaultRenderer(context: Context) : Renderer(context) {
     }
 
     private fun onRenderNode(node: Node, batch: Batch, camera: Camera) {
-        if (node is Renderable2D && viewBounds.intersects(
-                node.globalX,
-                node.globalY,
-                node.globalX + node.width,
-                node.globalY + node.height
-            )
-        ) {
+        if (node is Renderable2D && viewBounds.intersects(node.renderBounds)) {
             renderAfterStateCheck(node, batch)
         } else {
             node.render(batch, camera)
