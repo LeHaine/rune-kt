@@ -1,7 +1,7 @@
 package com.lehaine.rune.engine.node
 
-import com.lehaine.game.rune.engine.CooldownComponent
-import com.lehaine.game.rune.engine.distPxTo
+import com.lehaine.rune.engine.CooldownComponent
+import com.lehaine.rune.engine.distPxTo
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo

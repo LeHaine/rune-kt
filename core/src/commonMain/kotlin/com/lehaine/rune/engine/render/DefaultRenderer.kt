@@ -1,6 +1,6 @@
 package com.lehaine.rune.engine.render
 
-import com.lehaine.game.rune.engine.node.Renderable2D
+import com.lehaine.rune.engine.node.Renderable2D
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node

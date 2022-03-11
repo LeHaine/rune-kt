@@ -1,6 +1,6 @@
 package com.lehaine.rune.engine.node
 
-import com.lehaine.game.rune.engine.GameLevel
+import com.lehaine.rune.engine.GameLevel
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo

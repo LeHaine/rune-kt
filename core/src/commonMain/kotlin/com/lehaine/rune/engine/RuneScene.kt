@@ -1,7 +1,7 @@
 package com.lehaine.rune.engine
 
-import com.lehaine.game.rune.engine.render.DefaultRenderer
-import com.lehaine.game.rune.engine.render.Renderer
+import com.lehaine.rune.engine.render.DefaultRenderer
+import com.lehaine.rune.engine.render.Renderer
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graphics.SpriteBatch
