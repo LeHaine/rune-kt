@@ -42,7 +42,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.littlekt.core)
+                api(libs.littlekt.core)
                 implementation(libs.kotlinx.coroutines.core)
             }
         }
