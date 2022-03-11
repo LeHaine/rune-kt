@@ -20,7 +20,7 @@ if (secretPropsFile.exists()) {
         ext[name.toString()] = value
     }
 } else {
-    ext["secretKey"]  = System.getenv("SIGNING_SECRET_KEY")
+    ext["secretKey"] = System.getenv("SIGNING_SECRET_KEY")
     ext["signingPassword"] = System.getenv("SIGNING_PASSWORD")
     ext["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
     ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
@@ -32,10 +32,22 @@ val javadocJar by tasks.registering(Jar::class) {
 
 fun getExtraString(name: String) = ext[name]?.toString()
 
-publishing {
+val runeVersion: String by project
+val hash: String by lazy {
+    val stdout = java.io.ByteArrayOutputStream()
+    rootProject.exec {
+        commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
+        standardOutput = stdout
+    }
+    stdout.toString().trim()
+}
 
+publishing {
     repositories {
         maven {
+            if (!(project.extra["isReleaseVersion"] as Boolean)) {
+                version = "$runeVersion-$hash"
+            }
             name = "sonatype"
             val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
@@ -76,6 +88,10 @@ publishing {
 
         }
     }
+}
+
+tasks.withType<PublishToMavenLocal> {
+    version = runeVersion
 }
 
 signing {

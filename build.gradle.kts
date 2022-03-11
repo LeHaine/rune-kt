@@ -14,14 +14,7 @@ buildscript {
 }
 
 
-val hash: String by lazy {
-    val stdout = java.io.ByteArrayOutputStream()
-    rootProject.exec {
-        commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
-        standardOutput = stdout
-    }
-    stdout.toString().trim()
-}
+
 allprojects {
     repositories {
         maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
@@ -31,13 +24,8 @@ allprojects {
     }
 
     group = "com.lehaine.rune"
+    version = runeVersion
 
     val isReleaseVersion = !runeVersion.endsWith("SNAPSHOT")
-    version = if (isReleaseVersion) {
-        runeVersion
-    } else {
-        "$runeVersion-$hash"
-    }
-
     extra["isReleaseVersion"] = isReleaseVersion
 }
