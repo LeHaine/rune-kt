@@ -36,7 +36,7 @@ allprojects {
     version = if (isReleaseVersion) {
         runeVersion
     } else {
-        "$runeVersion#$hash"
+        "$runeVersion-$hash"
     }
 
     extra["isReleaseVersion"] = isReleaseVersion
