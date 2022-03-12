@@ -2,25 +2,26 @@ package com.lehaine.rune.engine
 
 import kotlin.math.*
 
-data class Point(var x: Double = 0.0, var y: Double = 0.0, var angle: Double = 0.0)
-data class Intersection(var pt: Point = Point(), var param: Double = 0.0, var angle: Double = 0.0)
-data class Segment(var p1: Point = Point(), var p2: Point = Point())
-data class Ray(var p1: Point = Point(), var p2: Point = Point())
 
 /**
  * Based off of the info here: https://www.redblobgames.com/articles/visibility/
  */
-class VisibilityPolygon(private var sightX: Double = 0.0, private var sightY: Double = 0.0) {
+class VisibilityPolygon(private var sightX: Float = 0f, private var sightY: Float = 0f) {
+    data class Point(var x: Float = 0f, var y: Float = 0f, var angle: Float = 0f)
+    private data class Intersection(var pt: Point = Point(), var param: Float = 0f, var angle: Float = 0f)
+    private data class Segment(var p1: Point = Point(), var p2: Point = Point())
+    private data class Ray(var p1: Point = Point(), var p2: Point = Point())
+
     private val segments = arrayListOf<Segment>()
     var output = arrayListOf<Point>()
 
     private val points = arrayListOf<Point>()
-    private val uniqueAngles = arrayListOf<Double>()
+    private val uniqueAngles = arrayListOf<Float>()
     private val pointMap = mutableMapOf<String, Boolean>()
     private val intersections = arrayListOf<Intersection>()
     private val tempRay = Ray()
 
-    fun addSegment(x1: Double, y1: Double, x2: Double, y2: Double) {
+    fun addSegment(x1: Float, y1: Float, x2: Float, y2: Float) {
         segments += Segment(Point(x1, y1), Point(x2, y2))
     }
 
@@ -47,9 +48,9 @@ class VisibilityPolygon(private var sightX: Double = 0.0, private var sightY: Do
         uniquePoints.forEach {
             val angle = atan2(it.y - sightY, it.x - sightX)
             it.angle = angle
-            uniqueAngles += angle - 0.00001
+            uniqueAngles += angle - 0.00001f
             uniqueAngles += angle
-            uniqueAngles += angle + 0.00001
+            uniqueAngles += angle + 0.00001f
         }
 
         intersections.clear()
