@@ -88,7 +88,7 @@ publishing {
 
 tasks.withType<PublishToMavenRepository> {
     if (!(project.extra["isReleaseVersion"] as Boolean)) {
-        version = "$runeVersion-$hash"
+        version = runeVersion.removeSuffix("-SNAPSHOT") + ".$hash-SNAPSHOT"
     }
 }
 
