@@ -8,7 +8,6 @@ import com.lehaine.littlekt.math.dist
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.cosine
 import com.lehaine.littlekt.math.interpolate
-import com.lehaine.rune.engine.node.node2d.CooldownNode
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -32,7 +31,7 @@ class GameCamera(
     private var bumpX = 0f
     private var bumpY = 0f
 
-    private val cd = CooldownNode()
+    private val cd = Cooldown()
 
     fun update(dt: Duration) {
         cd.update(dt)

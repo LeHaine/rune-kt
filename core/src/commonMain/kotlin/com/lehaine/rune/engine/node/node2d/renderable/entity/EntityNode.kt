@@ -11,8 +11,8 @@ import com.lehaine.littlekt.graphics.Textures
 import com.lehaine.littlekt.math.interpolate
 import com.lehaine.littlekt.util.*
 import com.lehaine.rune.engine.distPxTo
-import com.lehaine.rune.engine.node.node2d.CooldownNode
-import com.lehaine.rune.engine.node.node2d.FixedUpdaterNode
+import com.lehaine.rune.engine.node.CooldownNode
+import com.lehaine.rune.engine.node.FixedUpdaterNode
 import com.lehaine.rune.engine.node.node2d.renderable.AnimatedSprite
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
