@@ -13,8 +13,6 @@ buildscript {
     }
 }
 
-
-
 allprojects {
     repositories {
         mavenLocal()
