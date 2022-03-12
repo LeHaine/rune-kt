@@ -1,0 +1,33 @@
+name: build
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - 'README.md'
+  pull_request:
+    branches: [ master ]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  build:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Java JDK 11
+        uses: actions/setup-java@v2.5.0
+        with:
+          java-version: 11
+          distribution: adopt
+      - name: Grant gradlew execution permissions
+        run: chmod +x gradlew
+      - name: Start Gradle
+        run: ./gradlew
+      - name: Test JVM Target
+        run: ./gradlew core:jvmTest
+      - name: Test JS Target
+        run: ./gradlew core:jsTest
