@@ -2,6 +2,7 @@ package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.ContextListener
+import com.lehaine.rune.engine.ext.postUpdate
 
 /**
  * @author Colton Daily
@@ -47,6 +48,7 @@ open class Rune(context: Context) : ContextListener(context) {
             scene?.let { _scene ->
 
                 _scene.update(dt)
+                _scene.postUpdate(dt)
 
                 nextScene?.let { _nextScene ->
                     _scene.dispose()
