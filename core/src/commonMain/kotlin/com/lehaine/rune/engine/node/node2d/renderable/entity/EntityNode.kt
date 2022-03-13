@@ -14,6 +14,7 @@ import com.lehaine.rune.engine.distPxTo
 import com.lehaine.rune.engine.node.CooldownNode
 import com.lehaine.rune.engine.node.FixedUpdaterNode
 import com.lehaine.rune.engine.node.node2d.renderable.AnimatedSprite
+import com.lehaine.rune.engine.toPixelPosition
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -138,6 +139,11 @@ open class EntityNode(val gridCellSize: Int) : AnimatedSprite() {
         anchorY = 1f
     }
 
+    override fun onPositionChanged() {
+        super.onPositionChanged()
+        toPixelPosition(x, y)
+    }
+
     override fun onAddedToScene() {
         findClosestFixedUpdater()
     }
@@ -181,8 +187,7 @@ open class EntityNode(val gridCellSize: Int) : AnimatedSprite() {
     }
 
     open fun postUpdate(dt: Duration) {
-        x = px
-        y = py
+        position(px, py, false)
         scaleX = extraScaleX * dir * stretchX
         scaleY = extraScaleY * stretchY
         _stretchX += (1 - _stretchX) * min(1f, restoreSpeed * dt.seconds)
