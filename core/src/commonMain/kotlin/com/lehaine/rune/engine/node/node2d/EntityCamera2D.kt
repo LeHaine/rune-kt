@@ -23,28 +23,23 @@ import kotlin.time.Duration
 
 @OptIn(ExperimentalContracts::class)
 inline fun Node.entityCamera2d(
-    viewBounds: Rect = Rect(),
-    snapToPixel: Boolean = true,
     callback: @SceneGraphDslMarker EntityCamera2D.() -> Unit = {}
 ): EntityCamera2D {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return EntityCamera2D(viewBounds, snapToPixel).also(callback).addTo(this)
+    return EntityCamera2D().also(callback).addTo(this)
 }
 
 @OptIn(ExperimentalContracts::class)
 inline fun SceneGraph<*>.entityCamera2d(
-    viewBounds: Rect = Rect(),
-    snapToPixel: Boolean = true,
     callback: @SceneGraphDslMarker EntityCamera2D.() -> Unit = {}
 ): EntityCamera2D {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return root.entityCamera2d(viewBounds, snapToPixel, callback)
+    return root.entityCamera2d(callback)
 }
 
-class EntityCamera2D(
-    val viewBounds: Rect = Rect(),
+class EntityCamera2D : Camera2D() {
+    val viewBounds: Rect = Rect()
     val snapToPixel: Boolean = true
-) : Camera2D() {
     var deadZone: Int = 5
     var clampToBounds = true
     var following: EntityNode? = null
