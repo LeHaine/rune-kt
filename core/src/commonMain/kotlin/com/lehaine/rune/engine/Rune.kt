@@ -29,12 +29,14 @@ open class Rune(context: Context) : ContextListener(context) {
                     rune = this@Rune
                 }
                 onSceneChanged()
-                value.initialize()
-                value.resize(context.graphics.width, context.graphics.height, true)
+                initialize = true
+
             } else {
                 nextScene = value
             }
         }
+
+    private var initialize = false
 
     private var nextScene: RuneScene? = null
 
@@ -46,6 +48,12 @@ open class Rune(context: Context) : ContextListener(context) {
 
         onRender { dt ->
             scene?.let { _scene ->
+
+                if (initialize) {
+                    _scene.initialize()
+                    _scene.resize(context.graphics.width, context.graphics.height, true)
+                    initialize = false
+                }
 
                 _scene.update(dt)
                 _scene.postUpdate(dt)

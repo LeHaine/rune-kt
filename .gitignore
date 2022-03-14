@@ -65,3 +65,4 @@ kotlin-js-store
 
 #rune specific
 core/src/jvmMain/kotlin/com/lehaine/rune/Test.kt
+core/src/commonMain/resources/test/

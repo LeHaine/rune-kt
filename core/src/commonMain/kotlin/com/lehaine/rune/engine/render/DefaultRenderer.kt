@@ -16,30 +16,15 @@ class DefaultRenderer(context: Context) : Renderer(context) {
     private val viewBounds: Rect = Rect()
 
     override fun render(batch: Batch, scene: SceneGraph<*>) {
-        val camera = scene.camera
-        camera.update()
-        viewBounds.calculateViewBounds(camera)
-
-        begin(batch, camera)
-        scene.root.render(batch, camera, ::onRenderNode)
+        begin(batch)
+        scene.render(::onRenderNode)
         end(batch)
     }
 
     private fun onRenderNode(node: Node, batch: Batch, camera: Camera) {
+        viewBounds.calculateViewBounds(camera)
         if (node is Renderable2D && viewBounds.intersects(node.renderBounds)) {
             renderAfterStateCheck(node, batch)
-        } else {
-            node.render(batch, camera)
         }
-    }
-}
-
-private fun Node.render(batch: Batch, camera: Camera, callback: (Node, Batch, Camera) -> Unit) {
-    if (!enabled || !visible) return
-    callback(this, batch, camera)
-    render(batch, camera)
-    onRender.emit(batch, camera)
-    children.forEach {
-        it.render(batch, camera, callback)
     }
 }

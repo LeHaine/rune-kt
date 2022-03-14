@@ -4,6 +4,9 @@ import com.lehaine.rune.engine.render.DefaultRenderer
 import com.lehaine.rune.engine.render.Renderer
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
+import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.graphics.Batch
+import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.SpriteBatch
 import com.lehaine.littlekt.input.InputMapController
 import com.lehaine.littlekt.util.viewport.Viewport
@@ -24,14 +27,14 @@ open class RuneScene(context: Context, viewport: Viewport) :
 
     private val renderers = mutableListOf<Renderer>()
 
-    override fun initialize() {
+    override suspend fun initialize() {
         if (renderers.isEmpty()) {
             renderers.add(DefaultRenderer(context).also { it.onAddedToScene(this) })
         }
         super.initialize()
     }
 
-    override fun render() {
+    fun render() {
         renderers.forEach {
             it.render(batch, this)
         }

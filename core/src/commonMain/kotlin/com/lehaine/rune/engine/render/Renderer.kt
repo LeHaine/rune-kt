@@ -1,8 +1,5 @@
 package com.lehaine.rune.engine.render
 
-import com.lehaine.rune.engine.BlendMode
-import com.lehaine.rune.engine.RuneScene
-import com.lehaine.rune.engine.node.node2d.renderable.Renderable2D
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.Disposable
 import com.lehaine.littlekt.graph.SceneGraph
@@ -13,6 +10,9 @@ import com.lehaine.littlekt.graphics.GL
 import com.lehaine.littlekt.graphics.gl.BlendEquationMode
 import com.lehaine.littlekt.graphics.gl.BlendFactor
 import com.lehaine.littlekt.graphics.gl.ClearBufferMask
+import com.lehaine.rune.engine.BlendMode
+import com.lehaine.rune.engine.RuneScene
+import com.lehaine.rune.engine.node.node2d.renderable.Renderable2D
 
 /**
  * @author Colton Daily
@@ -35,12 +35,11 @@ abstract class Renderer(protected val context: Context) : Disposable {
      */
     override fun dispose() = Unit
 
-    protected fun begin(batch: Batch, camera: Camera) {
+    protected fun begin(batch: Batch) {
         currentBlendMode = blendMode
         gl.clearColor(clearColor)
         gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
         currentBlendMode?.setBlendFunctions(batch)
-        batch.begin(camera.viewProjection)
     }
 
     private fun BlendMode.setBlendFunctions(batch: Batch) {
@@ -64,7 +63,6 @@ abstract class Renderer(protected val context: Context) : Disposable {
     }
 
     fun end(batch: Batch) {
-        batch.end()
         gl.blendEquation(BlendEquationMode.FUNC_ADD)
         batch.setBlendFunctionSeparate(
             BlendFactor.SRC_ALPHA,
