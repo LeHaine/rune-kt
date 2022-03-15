@@ -1,20 +1,21 @@
 package com.lehaine.rune.engine
 
-import com.lehaine.rune.engine.render.DefaultRenderer
-import com.lehaine.rune.engine.render.Renderer
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
-import com.lehaine.littlekt.graph.node.Node
-import com.lehaine.littlekt.graphics.Batch
-import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.SpriteBatch
 import com.lehaine.littlekt.input.InputMapController
+import com.lehaine.littlekt.util.viewport.ScreenViewport
 import com.lehaine.littlekt.util.viewport.Viewport
+import com.lehaine.rune.engine.render.DefaultRenderer
+import com.lehaine.rune.engine.render.Renderer
 
 /**
  * @author Colton Daily
  */
-open class RuneScene(context: Context, viewport: Viewport) :
+open class RuneScene(
+    context: Context,
+    viewport: Viewport = ScreenViewport(context.graphics.width, context.graphics.height)
+) :
     SceneGraph<String>(
         context,
         viewport,

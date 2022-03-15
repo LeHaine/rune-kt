@@ -12,7 +12,9 @@ import com.lehaine.littlekt.math.interpolate
 import com.lehaine.littlekt.util.*
 import com.lehaine.rune.engine.distPxTo
 import com.lehaine.rune.engine.node.CooldownNode
+import com.lehaine.rune.engine.node.FixedUpdatable
 import com.lehaine.rune.engine.node.FixedUpdaterNode
+import com.lehaine.rune.engine.node.PostUpdatable
 import com.lehaine.rune.engine.node.node2d.renderable.AnimatedSprite
 import com.lehaine.rune.engine.toPixelPosition
 import kotlin.contracts.ExperimentalContracts
@@ -39,7 +41,7 @@ inline fun SceneGraph<*>.entity(
     return root.entity(gridCellSize, callback)
 }
 
-open class EntityNode(val gridCellSize: Int) : AnimatedSprite() {
+open class EntityNode(val gridCellSize: Int) : FixedUpdatable, PostUpdatable, AnimatedSprite() {
     var cx: Int = 0
     var cy: Int = 0
     var xr: Float = 0.5f
@@ -145,26 +147,9 @@ open class EntityNode(val gridCellSize: Int) : AnimatedSprite() {
     }
 
     override fun onAddedToScene() {
-        findClosestFixedUpdater()
+        fixedUpdater = findClosestFixedUpdater()
     }
-
-    private fun findClosestFixedUpdater() {
-        var current: Node? = this
-        while (current != null) {
-            val parent = current.parent
-            if (parent is FixedUpdaterNode) {
-                fixedUpdater = parent
-                return
-            } else {
-                current = parent
-            }
-            if (current != null && current == scene?.root) {
-                error("Unable to find a FixedUpdater for $name. Ensure that an EntityNode is a descendant of a FixedUpdaterNode.")
-            }
-        }
-        fixedUpdater = current
-    }
-
+    
     override fun render(batch: Batch, camera: Camera) {
         batch.draw(
             sprite, globalX, globalY,
@@ -181,12 +166,12 @@ open class EntityNode(val gridCellSize: Int) : AnimatedSprite() {
         cooldown.update(dt)
     }
 
-    open fun fixedUpdate() {
+    override fun fixedUpdate() {
         updateGridPosition()
         onFixedUpdate.emit()
     }
 
-    open fun postUpdate(dt: Duration) {
+    override fun postUpdate(dt: Duration) {
         position(px, py, false)
         scaleX = extraScaleX * dir * stretchX
         scaleY = extraScaleY * stretchY

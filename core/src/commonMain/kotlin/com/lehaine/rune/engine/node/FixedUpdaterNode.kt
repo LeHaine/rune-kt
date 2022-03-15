@@ -31,7 +31,7 @@ class FixedUpdaterNode : Node() {
     var timesPerSecond: Int = 30
         set(value) {
             field = value
-            time = (1f / timesPerSecond).seconds
+            time = (1f / value).seconds
         }
 
     private var accum = 0.milliseconds
@@ -40,7 +40,7 @@ class FixedUpdaterNode : Node() {
 
     override fun update(dt: Duration) {
         accum += dt
-        while (accum >= time * 0.75) {
+        while (accum >= time ) {
             accum -= time
             children.forEach {
                 it.fixedUpdate()
@@ -51,7 +51,7 @@ class FixedUpdaterNode : Node() {
     }
 
     private fun Node.fixedUpdate() {
-        if (this is EntityNode) {
+        if (this is FixedUpdatable) {
             this.fixedUpdate()
         }
         children.forEach {
