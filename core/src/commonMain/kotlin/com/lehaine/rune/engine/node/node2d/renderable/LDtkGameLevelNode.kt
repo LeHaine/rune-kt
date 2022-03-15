@@ -41,6 +41,13 @@ open class LDtkGameLevelNode<LevelMark>(var level: LDtkLevel) : Renderable2D(), 
     override val renderHeight: Float
         get() = level.pxHeight.toFloat()
 
+    var worldScale = 1f
+        set(value) {
+            field = value
+            scaleX = value
+            scaleY = value
+        }
+
     val levelWidth get() = level["Collisions"].gridWidth
     val levelHeight get() = level["Collisions"].gridHeight
 
@@ -85,7 +92,7 @@ open class LDtkGameLevelNode<LevelMark>(var level: LDtkLevel) : Renderable2D(), 
     protected open fun createLevelMarks() = Unit
 
     override fun render(batch: Batch, camera: Camera) {
-        level.render(batch, camera, globalX, globalY)
+        level.render(batch, camera, globalX, globalY, globalScaleX/globalScaleY * globalScaleX)
     }
 
 }

@@ -1,10 +1,10 @@
 package com.lehaine.rune.engine.node.node2d.renderable.entity
 
-import com.lehaine.rune.engine.GameLevel
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
+import com.lehaine.rune.engine.GameLevel
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -12,7 +12,7 @@ import kotlin.contracts.contract
 @OptIn(ExperimentalContracts::class)
 inline fun Node.platformEntity(
     level: GameLevel<*>,
-    gridCellSize: Int,
+    gridCellSize: Float,
     callback: @SceneGraphDslMarker PlatformEntityNode.() -> Unit = {}
 ): PlatformEntityNode {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
@@ -22,14 +22,14 @@ inline fun Node.platformEntity(
 @OptIn(ExperimentalContracts::class)
 inline fun SceneGraph<*>.platformEntity(
     level: GameLevel<*>,
-    gridCellSize: Int,
+    gridCellSize: Float,
     callback: @SceneGraphDslMarker PlatformEntityNode.() -> Unit = {}
 ): PlatformEntityNode {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return root.platformEntity(level, gridCellSize, callback)
 }
 
-open class PlatformEntityNode(level: GameLevel<*>, gridCellSize: Int) : LevelEntityNode(level, gridCellSize) {
+open class PlatformEntityNode(level: GameLevel<*>, gridCellSize: Float) : LevelEntityNode(level, gridCellSize) {
     val onGround
         get() = velocityY == 0f && level.hasCollision(
             cx,

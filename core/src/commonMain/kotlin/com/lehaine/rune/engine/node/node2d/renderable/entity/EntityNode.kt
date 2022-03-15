@@ -27,21 +27,21 @@ import kotlin.math.min
 import kotlin.time.Duration
 
 @OptIn(ExperimentalContracts::class)
-inline fun Node.entity(gridCellSize: Int, callback: @SceneGraphDslMarker EntityNode.() -> Unit = {}): EntityNode {
+inline fun Node.entity(gridCellSize: Float, callback: @SceneGraphDslMarker EntityNode.() -> Unit = {}): EntityNode {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return EntityNode(gridCellSize).also(callback).addTo(this)
 }
 
 @OptIn(ExperimentalContracts::class)
 inline fun SceneGraph<*>.entity(
-    gridCellSize: Int,
+    gridCellSize: Float,
     callback: @SceneGraphDslMarker EntityNode.() -> Unit = {}
 ): EntityNode {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return root.entity(gridCellSize, callback)
 }
 
-open class EntityNode(val gridCellSize: Int) : FixedUpdatable, PostUpdatable, AnimatedSprite() {
+open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, AnimatedSprite() {
     var cx: Int = 0
     var cy: Int = 0
     var xr: Float = 0.5f
@@ -56,8 +56,8 @@ open class EntityNode(val gridCellSize: Int) : FixedUpdatable, PostUpdatable, An
     var frictionY: Float = 0.82f
     var maxGridMovementPercent: Float = 0.33f
 
-    var width: Float = gridCellSize.toFloat()
-    var height: Float = gridCellSize.toFloat()
+    var width: Float = gridCellSize
+    var height: Float = gridCellSize
 
     val innerRadius get() = min(width, height) * 0.5
     val outerRadius get() = max(width, height) * 0.5
@@ -83,14 +83,14 @@ open class EntityNode(val gridCellSize: Int) : FixedUpdatable, PostUpdatable, An
         }
 
     /**
-     * Extra scaling that is used to calculate [scaleX]
+     * The current entity x-scaling.
      */
-    var extraScaleX = 1f
+    var entityScaleX = 1f
 
     /**
-     * Extra scaling that is used to calculate [scaleY].
+     * The current entity y-scaling.
      */
-    var extraScaleY = 1f
+    var entityScaleY = 1f
 
     var restoreSpeed: Float = 12f
 
@@ -149,14 +149,14 @@ open class EntityNode(val gridCellSize: Int) : FixedUpdatable, PostUpdatable, An
     override fun onAddedToScene() {
         fixedUpdater = findClosestFixedUpdater()
     }
-    
+
     override fun render(batch: Batch, camera: Camera) {
         batch.draw(
             sprite, globalX, globalY,
             anchorX * sprite.originalWidth,
             anchorY * sprite.originalHeight,
-            scaleX = globalScaleX,
-            scaleY = globalScaleY,
+            scaleX = entityScaleX,
+            scaleY = entityScaleY,
             rotation = globalRotation
         )
     }
@@ -173,8 +173,8 @@ open class EntityNode(val gridCellSize: Int) : FixedUpdatable, PostUpdatable, An
 
     override fun postUpdate(dt: Duration) {
         position(px, py, false)
-        scaleX = extraScaleX * dir * stretchX
-        scaleY = extraScaleY * stretchY
+        entityScaleX = globalScaleX * dir * stretchX
+        entityScaleY = globalScaleY * stretchY
         _stretchX += (1 - _stretchX) * min(1f, restoreSpeed * dt.seconds)
         _stretchY += (1 - _stretchY) * min(1f, restoreSpeed * dt.seconds)
 

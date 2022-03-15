@@ -14,7 +14,7 @@ import kotlin.math.floor
 @OptIn(ExperimentalContracts::class)
 inline fun Node.levelEntity(
     level: GameLevel<*>,
-    gridCellSize: Int,
+    gridCellSize: Float,
     callback: @SceneGraphDslMarker LevelEntityNode.() -> Unit = {}
 ): LevelEntityNode {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
@@ -24,7 +24,7 @@ inline fun Node.levelEntity(
 @OptIn(ExperimentalContracts::class)
 inline fun SceneGraph<*>.levelEntity(
     level: GameLevel<*>,
-    gridCellSize: Int,
+    gridCellSize: Float,
     callback: @SceneGraphDslMarker LevelEntityNode.() -> Unit = {}
 ): LevelEntityNode {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
@@ -33,7 +33,7 @@ inline fun SceneGraph<*>.levelEntity(
 
 open class LevelEntityNode(
     protected open val level: GameLevel<*>,
-    gridCellSize: Int
+    gridCellSize: Float
 ) : EntityNode(gridCellSize) {
     var rightCollisionRatio: Float = 0.7f
     var leftCollisionRatio: Float = 0.3f
@@ -65,7 +65,7 @@ open class LevelEntityNode(
     }
 
     override fun checkYCollision() {
-        val heightCoordDiff = if (useTopCollisionRatio) topCollisionRatio else floor(height / gridCellSize.toFloat())
+        val heightCoordDiff = if (useTopCollisionRatio) topCollisionRatio else floor(height / gridCellSize)
         if (level.hasCollision(cx, cy - 1) && yr <= heightCoordDiff) {
             yr = heightCoordDiff
             velocityY = 0f

@@ -5,11 +5,14 @@ import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graph.node.node2d.Camera2D
-import com.lehaine.littlekt.math.*
+import com.lehaine.littlekt.math.MutableVec2f
+import com.lehaine.littlekt.math.Rect
+import com.lehaine.littlekt.math.clamp
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.cosine
 import com.lehaine.littlekt.math.geom.radians
 import com.lehaine.littlekt.math.geom.sine
+import com.lehaine.littlekt.math.interpolate
 import com.lehaine.rune.engine.Cooldown
 import com.lehaine.rune.engine.node.FixedUpdatable
 import com.lehaine.rune.engine.node.FixedUpdaterNode
@@ -37,8 +40,10 @@ inline fun SceneGraph<*>.entityCamera2d(
 }
 
 class EntityCamera2D : Camera2D(), FixedUpdatable {
-    val viewBounds: Rect = Rect()
-    val snapToPixel: Boolean = true
+    var viewWidth: Float = 0f
+    var viewHeight: Float = 0f
+    private val viewBounds: Rect = Rect()
+    var snapToPixel: Boolean = true
     var clampToBounds = true
     var brakeDistanceNearBounds = 0.1f
     var following: EntityNode? = null
@@ -48,6 +53,7 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
     var deadZonePctY = 0.1f
 
     var friction = 0.89f
+    var trackingSpeed = 1f
 
     private var shakePower = 1f
     private var shakeFrames = 0
@@ -76,6 +82,8 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
 
     override fun update(dt: Duration) {
         cd.update(dt)
+        viewBounds.width = viewWidth * globalScaleX
+        viewBounds.height = viewHeight * globalScaleY
         sync()
     }
 
@@ -85,20 +93,20 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
     }
 
     override fun fixedUpdate() {
-        lastX = x
-        lastY = y
+        lastX = globalX
+        lastY = globalY
         val following = following
         if (following != null) {
-            val angle = atan2(following.centerY - rawFocus.y, following.centerX - rawFocus.x).radians
-            val distX = abs(following.centerX - rawFocus.x)
+            val angle = atan2(following.globalY - rawFocus.y, following.globalX - rawFocus.x).radians
+            val distX = abs(following.globalX - rawFocus.x)
             if (distX >= deadZonePctX * width) {
-                val speedX = 0.03f / zoom
-                dx += angle.cosine * (0.8f * distX - deadZonePctX * width) * speedX
+                val speedX = 0.06f / zoom
+                dx += angle.cosine * (0.8f * distX - deadZonePctX * width) * speedX * trackingSpeed
             }
-            val distY = abs(following.centerY - rawFocus.y)
+            val distY = abs(following.globalY - rawFocus.y)
             if (distY >= deadZonePctY * height) {
-                val speedY = 0.046f / zoom
-                dy += angle.sine * (0.8f * distY - deadZonePctY * height) * speedY
+                val speedY = 0.09f / zoom
+                dy += angle.sine * (0.8f * distY - deadZonePctY * height) * speedY * trackingSpeed
             }
         }
 
@@ -109,7 +117,7 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
             val brakeDistX = brakeDistanceNearBounds * width
             if (dx <= 0) {
                 val brakeRatio = 1 - ((rawFocus.x - width * 0.5f) / brakeDistX).clamp(0f, 1f)
-                frictX *= 1 - 1 * brakeRatio
+                frictX *= 1 - 0.9f * brakeRatio
             } else if (dx > 0) {
                 val brakeRatio = 1 - (((viewBounds.width - width * 0.5f) - rawFocus.x) / brakeDistX).clamp(0f, 1f)
                 frictY *= 1 - 0.9f * brakeRatio
@@ -152,19 +160,19 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
     }
 
     private fun sync() {
-        x = fixedProgressionRatio.interpolate(x, clampedFocus.x)
-        y = fixedProgressionRatio.interpolate(y, clampedFocus.y)
+        globalX = fixedProgressionRatio.interpolate(lastX, clampedFocus.x)
+        globalY = fixedProgressionRatio.interpolate(lastY, clampedFocus.y)
         if (cd.has(SHAKE)) {
-            x += cos(shakeFrames * 1.1f) * 2.5f * shakePower * cd.ratio(SHAKE)
-            y += sin(0.3f + shakeFrames * 1.7f) * 2.5f * shakePower * cd.ratio(SHAKE)
+            globalX += cos(shakeFrames * 1.1f) * 2.5f * shakePower * cd.ratio(SHAKE)
+            globalY += sin(0.3f + shakeFrames * 1.7f) * 2.5f * shakePower * cd.ratio(SHAKE)
             shakeFrames++
         } else {
             shakeFrames = 0
         }
 
         if (snapToPixel) {
-            x = x.floor()
-            y = y.floor()
+            globalX = globalX.roundToInt().toFloat()
+            globalY = globalY.roundToInt().toFloat()
         }
     }
 
@@ -189,7 +197,7 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
         following = entity
         if (setImmediately) {
             entity ?: error("Target entity not set!!")
-            position(entity.px, entity.py)
+            position(entity.globalX, entity.globalY)
         }
     }
 
