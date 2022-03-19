@@ -1,4 +1,4 @@
-package com.lehaine.rune.engine
+package com.lehaine.rune.engine.render
 
 import com.lehaine.littlekt.graphics.gl.BlendEquationMode
 import com.lehaine.littlekt.graphics.gl.BlendFactor

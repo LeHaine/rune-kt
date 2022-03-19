@@ -92,7 +92,7 @@ open class LDtkGameLevelNode<LevelMark>(var level: LDtkLevel) : Renderable2D(), 
     protected open fun createLevelMarks() = Unit
 
     override fun render(batch: Batch, camera: Camera) {
-        level.render(batch, camera, globalX, globalY, globalScaleX/globalScaleY * globalScaleX)
+        level.render(batch, camera, globalX, globalY, globalScaleX / globalScaleY * globalScaleX)
     }
 
 }

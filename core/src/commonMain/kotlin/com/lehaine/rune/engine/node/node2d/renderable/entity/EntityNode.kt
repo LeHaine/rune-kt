@@ -131,8 +131,6 @@ open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, 
 
     val cooldown by lazy { CooldownNode().addTo(this) }
 
-    var sprite: TextureSlice = Textures.white
-
     val onFixedUpdate: Signal = signal()
     val onPostUpdate: SingleSignal<Duration> = signal1v()
 
@@ -151,19 +149,16 @@ open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, 
     }
 
     override fun render(batch: Batch, camera: Camera) {
-        batch.draw(
-            sprite, globalX, globalY,
-            anchorX * sprite.originalWidth,
-            anchorY * sprite.originalHeight,
-            scaleX = entityScaleX,
-            scaleY = entityScaleY,
-            rotation = globalRotation
-        )
-    }
-
-    override fun update(dt: Duration) {
-        super.update(dt)
-        cooldown.update(dt)
+        textureSlice?.let {
+            batch.draw(
+                it, globalX, globalY,
+                anchorX * it.originalWidth,
+                anchorY * it.originalHeight,
+                scaleX = entityScaleX,
+                scaleY = entityScaleY,
+                rotation = globalRotation
+            )
+        }
     }
 
     override fun fixedUpdate() {

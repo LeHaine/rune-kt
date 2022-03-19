@@ -7,7 +7,7 @@ import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.math.Vec2f
 import com.lehaine.littlekt.math.geom.Angle
-import com.lehaine.rune.engine.BlendMode
+import com.lehaine.rune.engine.render.BlendMode
 
 abstract class Renderable2D : Node2D() {
     /**

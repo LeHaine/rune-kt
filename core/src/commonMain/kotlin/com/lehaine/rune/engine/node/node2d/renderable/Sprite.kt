@@ -55,11 +55,12 @@ open class Sprite : Renderable2D() {
                 globalX + localOffsetX,
                 globalY + localOffsetY,
                 anchorX * it.width,
-                anchorY * it.width,
+                anchorY * it.height,
                 scaleX = globalScaleX,
                 scaleY = globalScaleY,
                 flipX = flipX,
                 flipY = flipY,
+                rotation = globalRotation,
                 colorBits = color.toFloatBits()
             )
         }

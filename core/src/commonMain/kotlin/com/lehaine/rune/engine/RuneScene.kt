@@ -4,10 +4,12 @@ import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graphics.SpriteBatch
 import com.lehaine.littlekt.input.InputMapController
+import com.lehaine.littlekt.util.seconds
 import com.lehaine.littlekt.util.viewport.ScreenViewport
 import com.lehaine.littlekt.util.viewport.Viewport
 import com.lehaine.rune.engine.render.DefaultRenderer
 import com.lehaine.rune.engine.render.Renderer
+import kotlin.time.Duration
 
 /**
  * @author Colton Daily
@@ -15,14 +17,13 @@ import com.lehaine.rune.engine.render.Renderer
 open class RuneScene(
     context: Context,
     viewport: Viewport = ScreenViewport(context.graphics.width, context.graphics.height)
-) :
-    SceneGraph<String>(
-        context,
-        viewport,
-        SpriteBatch(context, 8191),
-        UiInputSignals(),
-        InputMapController(context.input)
-    ) {
+) : SceneGraph<String>(
+    context,
+    viewport,
+    SpriteBatch(context, 8191),
+    UiInputSignals(),
+    InputMapController(context.input)
+) {
 
     var rune: Rune? = null
 
