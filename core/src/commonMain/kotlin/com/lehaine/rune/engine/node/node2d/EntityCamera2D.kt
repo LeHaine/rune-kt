@@ -5,14 +5,11 @@ import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graph.node.node2d.Camera2D
-import com.lehaine.littlekt.math.MutableVec2f
-import com.lehaine.littlekt.math.Rect
-import com.lehaine.littlekt.math.clamp
+import com.lehaine.littlekt.math.*
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.cosine
 import com.lehaine.littlekt.math.geom.radians
 import com.lehaine.littlekt.math.geom.sine
-import com.lehaine.littlekt.math.interpolate
 import com.lehaine.rune.engine.Cooldown
 import com.lehaine.rune.engine.node.FixedUpdatable
 import com.lehaine.rune.engine.node.FixedUpdaterNode
@@ -71,8 +68,8 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
 
     private val cd = Cooldown()
 
-    private val virtualWidth: Int get() = viewport?.virtualWidth ?: 0
-    private val virtualHeight: Int get() = viewport?.virtualHeight ?: 0
+    private val virtualWidth: Int get() = canvas?.virtualWidth ?: 0
+    private val virtualHeight: Int get() = canvas?.virtualHeight ?: 0
 
     private var fixedUpdater: FixedUpdaterNode? = null
     private val fixedProgressionRatio: Float get() = fixedUpdater?.fixedProgressionRatio ?: 1f
@@ -83,6 +80,10 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
         snapToPixel = true
     }
 
+    override fun onAddedToScene() {
+        fixedUpdater = findClosestFixedUpdater()
+    }
+
     override fun update(dt: Duration) {
         cd.update(dt)
         viewBounds.width = viewWidth * globalScaleX
@@ -90,23 +91,18 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
         sync()
     }
 
-
-    override fun onAddedToScene() {
-        fixedUpdater = findClosestFixedUpdater()
-    }
-
     override fun fixedUpdate() {
         lastX = globalX
         lastY = globalY
         val following = following
         if (following != null) {
-            val angle = atan2(following.globalY - rawFocus.y, following.globalX - rawFocus.x).radians
-            val distX = abs(following.globalX - rawFocus.x)
+            val angle = atan2(following.py.floor() - rawFocus.y, following.px.floor() - rawFocus.x).radians
+            val distX = abs(following.px.floor() - rawFocus.x)
             if (distX >= deadZonePctX * width) {
                 val speedX = 0.06f / zoom
                 dx += angle.cosine * (0.8f * distX - deadZonePctX * width) * speedX * trackingSpeed
             }
-            val distY = abs(following.globalY - rawFocus.y)
+            val distY = abs(following.py.floor() - rawFocus.y)
             if (distY >= deadZonePctY * height) {
                 val speedY = 0.09f / zoom
                 dy += angle.sine * (0.8f * distY - deadZonePctY * height) * speedY * trackingSpeed
@@ -163,20 +159,20 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
     }
 
     private fun sync() {
-        globalX = fixedProgressionRatio.interpolate(lastX, clampedFocus.x)
-        globalY = fixedProgressionRatio.interpolate(lastY, clampedFocus.y)
+        var targetX = fixedProgressionRatio.interpolate(lastX, clampedFocus.x)
+        var targetY = fixedProgressionRatio.interpolate(lastY, clampedFocus.y)
         if (cd.has(SHAKE)) {
-            globalX += cos(shakeFrames * 1.1f) * 2.5f * shakePower * cd.ratio(SHAKE)
-            globalY += sin(0.3f + shakeFrames * 1.7f) * 2.5f * shakePower * cd.ratio(SHAKE)
+            targetX += cos(shakeFrames * 1.1f) * 2.5f * shakePower * cd.ratio(SHAKE)
+            targetY += sin(0.3f + shakeFrames * 1.7f) * 2.5f * shakePower * cd.ratio(SHAKE)
             shakeFrames++
         } else {
             shakeFrames = 0
         }
 
-        if (snapToPixel) {
-            globalX = globalX.roundToInt().toFloat()
-            globalY = globalY.roundToInt().toFloat()
-        }
+        val finalX = targetX - globalX
+        val finalY = targetY - globalY
+        globalX += if(snapToPixel) finalX.roundToInt().toFloat() else finalX
+        globalY += if(snapToPixel) finalY.roundToInt().toFloat() else finalY
     }
 
     fun shake(time: Duration, power: Float = 1f) {
@@ -211,4 +207,5 @@ class EntityCamera2D : Camera2D(), FixedUpdatable {
     companion object {
         private const val SHAKE = "shake"
     }
+
 }

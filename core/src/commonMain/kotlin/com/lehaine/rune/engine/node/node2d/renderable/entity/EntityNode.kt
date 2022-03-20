@@ -151,7 +151,7 @@ open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, 
     override fun render(batch: Batch, camera: Camera) {
         textureSlice?.let {
             batch.draw(
-                it, globalX, globalY,
+                it, px, py,
                 anchorX * it.originalWidth,
                 anchorY * it.originalHeight,
                 scaleX = entityScaleX,
