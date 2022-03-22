@@ -1,40 +1,13 @@
-package com.lehaine.rune.engine.node.node2d.renderable.entity
+package com.lehaine.rune.engine.renderable.entity
 
-import com.lehaine.rune.engine.GameLevel
-import com.lehaine.littlekt.graph.SceneGraph
-import com.lehaine.littlekt.graph.node.Node
-import com.lehaine.littlekt.graph.node.addTo
-import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkEntity
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
+import com.lehaine.rune.engine.GameLevel
 import kotlin.math.floor
 
-@OptIn(ExperimentalContracts::class)
-inline fun Node.levelEntity(
-    level: GameLevel<*>,
-    gridCellSize: Float,
-    callback: @SceneGraphDslMarker LevelEntityNode.() -> Unit = {}
-): LevelEntityNode {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return LevelEntityNode(level, gridCellSize).also(callback).addTo(this)
-}
-
-@OptIn(ExperimentalContracts::class)
-inline fun SceneGraph<*>.levelEntity(
-    level: GameLevel<*>,
-    gridCellSize: Float,
-    callback: @SceneGraphDslMarker LevelEntityNode.() -> Unit = {}
-): LevelEntityNode {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return root.levelEntity(level, gridCellSize, callback)
-}
-
-open class LevelEntityNode(
+open class LevelEntity(
     protected open val level: GameLevel<*>,
     gridCellSize: Float
-) : EntityNode(gridCellSize) {
+) : Entity(gridCellSize) {
     var rightCollisionRatio: Float = 0.7f
     var leftCollisionRatio: Float = 0.3f
     var bottomCollisionRatio: Float = 1f

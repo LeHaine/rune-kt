@@ -2,7 +2,6 @@ package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.ContextListener
-import com.lehaine.rune.engine.ext.postUpdate
 
 /**
  * @author Colton Daily
@@ -43,19 +42,23 @@ open class Rune(context: Context) : ContextListener(context) {
     final override suspend fun Context.start() {
         create()
         onResize { width, height ->
-            scene?.resize(width, height, true)
+            scene?.resize?.invoke(width, height)
         }
 
         onRender { dt ->
             scene?.let { _scene ->
 
                 if (initialize) {
-                    _scene.initialize()
-                    _scene.resize(context.graphics.width, context.graphics.height, true)
+                    with(_scene) {
+                        context.initialize()
+                    }
+                    _scene.resize(context.graphics.width, context.graphics.height)
+
                     initialize = false
                 }
 
-                _scene.update(dt)
+                _scene.preUpdate(dt)
+                _scene.step(dt)
                 _scene.postUpdate(dt)
 
                 nextScene?.let { _nextScene ->
@@ -66,11 +69,14 @@ open class Rune(context: Context) : ContextListener(context) {
                         rune = this@Rune
                     }
                     onSceneChanged()
-                    _nextScene.initialize()
-                    _nextScene.resize(context.graphics.width, context.graphics.height, true)
+                    with(_nextScene) {
+                        context.initialize()
+                    }
+                    _nextScene.resize(context.graphics.width, context.graphics.height)
                 }
             }
-            scene?.render()
+            scene?.render?.invoke()
+            scene?.postRender?.invoke()
         }
     }
 

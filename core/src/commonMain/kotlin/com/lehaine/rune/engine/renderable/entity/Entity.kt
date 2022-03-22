@@ -1,47 +1,19 @@
-package com.lehaine.rune.engine.node.node2d.renderable.entity
+package com.lehaine.rune.engine.renderable.entity
 
-import com.lehaine.littlekt.graph.SceneGraph
-import com.lehaine.littlekt.graph.node.Node
-import com.lehaine.littlekt.graph.node.addTo
-import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
-import com.lehaine.littlekt.graphics.TextureSlice
-import com.lehaine.littlekt.graphics.Textures
 import com.lehaine.littlekt.math.interpolate
 import com.lehaine.littlekt.util.*
-import com.lehaine.rune.engine.distPxTo
-import com.lehaine.rune.engine.node.CooldownNode
-import com.lehaine.rune.engine.node.FixedUpdatable
+import com.lehaine.rune.engine.Cooldown
 import com.lehaine.rune.engine.node.FixedUpdaterNode
-import com.lehaine.rune.engine.node.PostUpdatable
-import com.lehaine.rune.engine.node.node2d.renderable.AnimatedSprite
-import com.lehaine.rune.engine.toPixelPosition
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
+import com.lehaine.rune.engine.renderable.AnimatedSprite
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.time.Duration
 
-@OptIn(ExperimentalContracts::class)
-inline fun Node.entity(gridCellSize: Float, callback: @SceneGraphDslMarker EntityNode.() -> Unit = {}): EntityNode {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return EntityNode(gridCellSize).also(callback).addTo(this)
-}
-
-@OptIn(ExperimentalContracts::class)
-inline fun SceneGraph<*>.entity(
-    gridCellSize: Float,
-    callback: @SceneGraphDslMarker EntityNode.() -> Unit = {}
-): EntityNode {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return root.entity(gridCellSize, callback)
-}
-
-open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, AnimatedSprite() {
+open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     var cx: Int = 0
     var cy: Int = 0
     var xr: Float = 0.5f
@@ -127,9 +99,9 @@ open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, 
     /**
      * The ratio to interpolate the last position to the new position.
      */
-    val fixedProgressionRatio: Float get() = fixedUpdater?.fixedProgressionRatio ?: 1f
+    val fixedProgressionRatio: Float get() = scene?.fixedProgressionRatio ?: 1f
 
-    val cooldown by lazy { CooldownNode().addTo(this) }
+    val cooldown = Cooldown()
 
     val onFixedUpdate: Signal = signal()
     val onPostUpdate: SingleSignal<Duration> = signal1v()
@@ -144,10 +116,6 @@ open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, 
         toPixelPosition(x, y)
     }
 
-    override fun onAddedToScene() {
-        fixedUpdater = findClosestFixedUpdater()
-    }
-
     override fun render(batch: Batch, camera: Camera) {
         textureSlice?.let {
             batch.draw(
@@ -156,7 +124,7 @@ open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, 
                 anchorY * it.originalHeight,
                 scaleX = entityScaleX,
                 scaleY = entityScaleY,
-                rotation = globalRotation
+                rotation = rotation
             )
         }
     }
@@ -167,9 +135,9 @@ open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, 
     }
 
     override fun postUpdate(dt: Duration) {
-        position(px, py, false)
-        entityScaleX = globalScaleX * dir * stretchX
-        entityScaleY = globalScaleY * stretchY
+        _position.set(px, py)
+        entityScaleX = scaleX * dir * stretchX
+        entityScaleY = scaleY * stretchY
         _stretchX += (1 - _stretchX) * min(1f, restoreSpeed * dt.seconds)
         _stretchY += (1 - _stretchY) * min(1f, restoreSpeed * dt.seconds)
 
@@ -180,7 +148,7 @@ open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, 
     /**
      * AABB check
      */
-    fun isCollidingWith(from: EntityNode): Boolean {
+    fun isCollidingWith(from: Entity): Boolean {
         val lx = left
         val lx2 = from.left
         val rx = right
@@ -202,8 +170,8 @@ open class EntityNode(val gridCellSize: Float) : FixedUpdatable, PostUpdatable, 
         return true
     }
 
-    fun isCollidingWithInnerCircle(from: EntityNode) = distPxTo(from) <= innerRadius
-    fun isCollidingWithOuterCircle(from: EntityNode) = distPxTo(from) <= outerRadius
+    fun isCollidingWithInnerCircle(from: Entity) = distPxTo(from) <= innerRadius
+    fun isCollidingWithOuterCircle(from: Entity) = distPxTo(from) <= outerRadius
 
     fun onPositionManuallyChanged() {
         lastPx = attachX

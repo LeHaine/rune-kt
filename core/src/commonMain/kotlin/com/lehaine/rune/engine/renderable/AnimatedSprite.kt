@@ -1,30 +1,11 @@
-package com.lehaine.rune.engine.node.node2d.renderable
+package com.lehaine.rune.engine.renderable
 
-import com.lehaine.littlekt.graph.SceneGraph
-import com.lehaine.littlekt.graph.node.Node
-import com.lehaine.littlekt.graph.node.addTo
-import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graphics.Animation
 import com.lehaine.littlekt.graphics.AnimationPlayer
 import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.util.SingleSignal
 import com.lehaine.littlekt.util.signal1v
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 import kotlin.time.Duration
-
-@OptIn(ExperimentalContracts::class)
-inline fun Node.animatedSprite(callback: @SceneGraphDslMarker AnimatedSprite.() -> Unit = {}): AnimatedSprite {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return AnimatedSprite().also(callback).addTo(this)
-}
-
-@OptIn(ExperimentalContracts::class)
-inline fun SceneGraph<*>.animatedSprite(callback: @SceneGraphDslMarker AnimatedSprite.() -> Unit = {}): AnimatedSprite {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return root.animatedSprite(callback)
-}
 
 /**
  * @author Colton Daily

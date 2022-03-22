@@ -1,9 +1,5 @@
-package com.lehaine.rune.engine.node.node2d.renderable
+package com.lehaine.rune.engine.renderable
 
-import com.lehaine.littlekt.graph.SceneGraph
-import com.lehaine.littlekt.graph.node.Node
-import com.lehaine.littlekt.graph.node.addTo
-import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.ParticleSimulator
@@ -11,23 +7,9 @@ import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
 import com.lehaine.littlekt.util.fastForEach
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
-@OptIn(ExperimentalContracts::class)
-inline fun Node.particleSimulator(callback: @SceneGraphDslMarker ParticleSimulatorNode.() -> Unit = {}): ParticleSimulatorNode {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return ParticleSimulatorNode().also(callback).addTo(this)
-}
 
-@OptIn(ExperimentalContracts::class)
-inline fun SceneGraph<*>.particleSimulator(callback: @SceneGraphDslMarker ParticleSimulatorNode.() -> Unit = {}): ParticleSimulatorNode {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return root.particleSimulator(callback)
-}
-
-class ParticleSimulatorNode : Renderable2D() {
+class ParticleSimulatorRenderable : Renderable2D() {
 
     // max value because we handle culling internally
     override val renderWidth: Float = Float.MAX_VALUE
@@ -45,21 +27,21 @@ class ParticleSimulatorNode : Renderable2D() {
             if (!it.visible || !it.alive) return@fastForEach
 
             if (viewBounds.intersects(
-                    it.x + globalX,
-                    it.y + globalY,
+                    it.x + x,
+                    it.y + y,
                     it.slice.width.toFloat(),
                     it.slice.height.toFloat()
                 )
             ) {
                 batch.draw(
                     it.slice,
-                    it.x + globalX,
-                    it.y + globalY,
+                    it.x + x,
+                    it.y + y,
                     it.anchorX * it.slice.width,
                     it.anchorY * it.slice.height,
-                    scaleX = it.scaleX * globalScaleX,
-                    scaleY = it.scaleY * globalScaleY,
-                    rotation = it.rotation + globalRotation,
+                    scaleX = it.scaleX * scaleX,
+                    scaleY = it.scaleY * scaleY,
+                    rotation = it.rotation + rotation,
                     colorBits = it.colorBits
                 )
             }

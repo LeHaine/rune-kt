@@ -1,67 +1,54 @@
 package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.Context
-import com.lehaine.littlekt.graph.SceneGraph
-import com.lehaine.littlekt.graphics.SpriteBatch
-import com.lehaine.littlekt.input.InputMapController
+import com.lehaine.littlekt.util.milliseconds
 import com.lehaine.littlekt.util.seconds
-import com.lehaine.littlekt.util.viewport.ScreenViewport
-import com.lehaine.littlekt.util.viewport.Viewport
-import com.lehaine.rune.engine.render.DefaultRenderer
-import com.lehaine.rune.engine.render.Renderer
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * @author Colton Daily
  */
-open class RuneScene(
-    context: Context,
-    viewport: Viewport = ScreenViewport(context.graphics.width, context.graphics.height)
-) : SceneGraph<String>(
-    context,
-    viewport,
-    SpriteBatch(context, 8191),
-    UiInputSignals(),
-    InputMapController(context.input)
-) {
+open class RuneScene(val context: Context) {
 
     var rune: Rune? = null
+    var resize: (width: Int, height: Int) -> Unit = { _, _ -> }
+    var preUpdate: (dt: Duration) -> Unit = {}
+    var update: (dt: Duration) -> Unit = {}
+    var postUpdate: (dt: Duration) -> Unit = {}
+    var fixedUpdate: () -> Unit = {}
+    var render: () -> Unit = {}
+    var postRender: () -> Unit = {}
+    var dispose: () -> Unit = {}
 
-    private val renderers = mutableListOf<Renderer>()
-
-    override suspend fun initialize() {
-        if (renderers.isEmpty()) {
-            renderers.add(DefaultRenderer(context).also { it.onAddedToScene(this) })
+    val fixedProgressionRatio: Float get() = _fixedProgressionRatio
+    var timesPerSecond: Int = 30
+        set(value) {
+            field = value
+            time = (1f / value).seconds
         }
-        super.initialize()
-    }
 
-    fun render() {
-        renderers.forEach {
-            it.render(batch, this)
+    private var accum = 0.milliseconds
+    private var _fixedProgressionRatio = 1f
+    private var time = (1f / timesPerSecond).seconds
+
+    internal fun step(dt: Duration) {
+        accum += dt
+        while (accum >= time) {
+            accum -= time
+            fixedUpdate()
         }
+
+        _fixedProgressionRatio = accum.milliseconds / time.milliseconds
+
+        update(dt)
     }
 
-    fun addRenderer(renderer: Renderer) {
-        renderers += renderer
-        renderer.onAddedToScene(this)
-    }
-
-    fun removeRenderer(renderer: Renderer) {
-        renderers -= renderer
-        renderer.dispose()
-    }
+    open suspend fun Context.initialize() = Unit
 
     fun changeTo(scene: RuneScene) {
         val rune = rune
         check(rune != null) { "This scenes `Rune` property is null. This is most likely because the scene isn't set!" }
         rune.scene = scene
-    }
-
-    override fun dispose() {
-        renderers.forEach {
-            it.dispose()
-        }
-        super.dispose()
     }
 }

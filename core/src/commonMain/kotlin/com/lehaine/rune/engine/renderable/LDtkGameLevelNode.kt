@@ -1,36 +1,11 @@
-package com.lehaine.rune.engine.node.node2d.renderable
+package com.lehaine.rune.engine.renderable
 
-import com.lehaine.littlekt.graph.SceneGraph
-import com.lehaine.littlekt.graph.node.Node
-import com.lehaine.littlekt.graph.node.addTo
-import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkIntGridLayer
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkLevel
 import com.lehaine.littlekt.math.clamp
 import com.lehaine.rune.engine.GameLevel
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
-
-@OptIn(ExperimentalContracts::class)
-inline fun <LevelMark> Node.ldtkLevel(
-    level: LDtkLevel,
-    callback: @SceneGraphDslMarker LDtkGameLevelNode<LevelMark>.() -> Unit = {}
-): LDtkGameLevelNode<LevelMark> {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return LDtkGameLevelNode<LevelMark>(level).also(callback).addTo(this)
-}
-
-@OptIn(ExperimentalContracts::class)
-inline fun <LevelMark> SceneGraph<*>.ldtkLevel(
-    level: LDtkLevel,
-    callback: @SceneGraphDslMarker LDtkGameLevelNode<LevelMark>.() -> Unit = {}
-): LDtkGameLevelNode<LevelMark> {
-    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return root.ldtkLevel(level, callback)
-}
 
 open class LDtkGameLevelNode<LevelMark>(var level: LDtkLevel) : Renderable2D(), GameLevel<LevelMark> {
     override var gridSize: Int = 16
@@ -92,7 +67,7 @@ open class LDtkGameLevelNode<LevelMark>(var level: LDtkLevel) : Renderable2D(), 
     protected open fun createLevelMarks() = Unit
 
     override fun render(batch: Batch, camera: Camera) {
-        level.render(batch, camera, globalX, globalY, globalScaleX / globalScaleY * globalScaleX)
+        level.render(batch, camera, x, y, scaleY / scaleY * scaleX)
     }
 
 }
