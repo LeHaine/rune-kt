@@ -89,13 +89,13 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
 
         val following = following
         if (following != null) {
-            val angle = atan2(following.py.floor() - rawFocus.y, following.px.floor() - rawFocus.x).radians
-            val distX = abs(following.px.floor() - rawFocus.x)
+            val angle = atan2(following.centerY.floor() - rawFocus.y, following.centerX.floor() - rawFocus.x).radians
+            val distX = abs(following.centerX.floor() - rawFocus.x)
             if (distX >= deadZonePctX * width) {
                 val speedX = 0.015f / combinedZoom * trackingSpeed
                 dx += angle.cosine * (0.8f * distX - deadZonePctX * width) * speedX * tmod
             }
-            val distY = abs(following.py.floor() - rawFocus.y)
+            val distY = abs(following.centerY.floor() - rawFocus.y)
             if (distY >= deadZonePctY * height) {
                 val speedY = 0.023f / combinedZoom * trackingSpeed
                 dy += angle.sine * (0.8f * distY - deadZonePctY * height) * speedY * tmod
@@ -134,16 +134,16 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
         bumpY *= bumpFrict.pow(tmod)
 
         if (clampToBounds) {
-            clampedFocus.x = if (viewBounds.width < width) {
+            clampedFocus.x = if (viewBounds.width < width - offset.x) {
                 viewBounds.width * 0.5f
             } else {
-                rawFocus.x.clamp(width * 0.5f, viewBounds.width - width * 0.5f)
+                rawFocus.x.clamp(width * 0.5f - offset.x, viewBounds.width - width * 0.5f + offset.x)
             }
 
-            clampedFocus.y = if (viewBounds.height < height) {
+            clampedFocus.y = if (viewBounds.height < height - offset.y) {
                 viewBounds.height * 0.5f
             } else {
-                rawFocus.y.clamp(height * 0.5f, viewBounds.height - height * 0.5f)
+                rawFocus.y.clamp(height * 0.5f - offset.y, viewBounds.height - height * 0.5f + offset.y)
             }
         } else {
             clampedFocus.x = rawFocus.x
@@ -168,8 +168,8 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
         scaledDistX = (targetX - tx) * ppu
         scaledDistY = (targetY - ty) * ppu
 
-        position.x = tx
-        position.y = ty
+        position.x = tx + offset.x
+        position.y = ty + offset.y
     }
 
     fun shake(time: Duration, power: Float = 1f) {
