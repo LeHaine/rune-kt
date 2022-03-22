@@ -1,7 +1,10 @@
 package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.graphics.OrthographicCamera
-import com.lehaine.littlekt.math.*
+import com.lehaine.littlekt.math.MutableVec2f
+import com.lehaine.littlekt.math.Rect
+import com.lehaine.littlekt.math.clamp
+import com.lehaine.littlekt.math.floor
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.cosine
 import com.lehaine.littlekt.math.geom.radians
@@ -22,23 +25,28 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
     var deadZonePctY = 0.1f
 
     var friction = 0.89f
+    var bumpFrict = 0.85f
     var trackingSpeed = 1f
     var ppu = 1f
 
-    private var shakePower = 1f
-    private var shakeFrames = 0
+    var shakePower = 1f
+    var shakeFrames = 0
+    var dx = 0f
+    var dy = 0f
+    var dz = 0f
+    var bumpX = 0f
+    var bumpY = 0f
+    var bumpZoomFactor = 0f
+    var targetZoom = 1f
+    var zoomSpeed = 0.0014f
+    var zoomFrict = 0.9f
+    val combinedZoom get() = zoom + bumpZoomFactor
 
-    private val width get() = virtualWidth * zoom
-    private val height get() = virtualHeight * zoom
-
-    private var dx = 0f
-    private var dy = 0f
+    private val width get() = virtualWidth * combinedZoom
+    private val height get() = virtualHeight * combinedZoom
 
     private val rawFocus = MutableVec2f()
     private val clampedFocus = MutableVec2f()
-
-    private var bumpX = 0f
-    private var bumpY = 0f
 
     private val cd = Cooldown()
 
@@ -46,34 +54,55 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
         private set
     var scaledDistY: Float = 0f
 
-    private var lastX = 0f
-    private var lastY = 0f
-    var fixedProgressionRatio = 1f
+    var tmod: Float = 1f
 
-    fun update(dt: Duration) {
+    fun update(dt: Duration, tmod: Float) {
         cd.update(dt)
+        this.tmod = tmod
+        updatePosition()
         sync()
     }
 
-    fun fixedUpdate() {
-        lastX = position.x
-        lastY = position.y
+    fun updatePosition() {
+        val tz = targetZoom
+        if (tz != zoom) {
+            if (tz > zoom) {
+                dz += zoomSpeed
+            } else {
+                dz -= zoomSpeed
+            }
+        } else {
+            dz = 0f
+        }
+        val prevZoom = zoom
+        zoom += dz * tmod
+        bumpZoomFactor *= (0.9f).pow(tmod)
+        dz *= zoomFrict.pow(tmod)
+        if (abs(tz - zoom) <= 0.05f * tmod) {
+            dz *= (0.8f).pow(tmod)
+        }
+
+        if (prevZoom < tz && zoom >= tz || prevZoom > tz && zoom <= tz) {
+            zoom = tz
+            dz = 0f
+        }
+
         val following = following
         if (following != null) {
             val angle = atan2(following.py.floor() - rawFocus.y, following.px.floor() - rawFocus.x).radians
             val distX = abs(following.px.floor() - rawFocus.x)
             if (distX >= deadZonePctX * width) {
-                val speedX = 0.06f / zoom
-                dx += angle.cosine * (0.8f * distX - deadZonePctX * width) * speedX * trackingSpeed
+                val speedX = 0.015f / combinedZoom * trackingSpeed
+                dx += angle.cosine * (0.8f * distX - deadZonePctX * width) * speedX * tmod
             }
             val distY = abs(following.py.floor() - rawFocus.y)
             if (distY >= deadZonePctY * height) {
-                val speedY = 0.09f / zoom
-                dy += angle.sine * (0.8f * distY - deadZonePctY * height) * speedY * trackingSpeed
+                val speedY = 0.023f / combinedZoom * trackingSpeed
+                dy += angle.sine * (0.8f * distY - deadZonePctY * height) * speedY * tmod
             }
         }
 
-        var frictX = friction - zoom * 0.054f * friction
+        var frictX = friction - combinedZoom * 0.054f * friction
         var frictY = frictX
 
         if (clampToBounds) {
@@ -96,13 +125,13 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
             }
         }
 
-        rawFocus.x += dx
-        rawFocus.y += dy
-        dx *= frictX.pow(2)
-        dy *= frictY.pow(2)
+        rawFocus.x += dx * tmod
+        rawFocus.y += dy * tmod
+        dx *= frictX.pow(tmod)
+        dy *= frictY.pow(tmod)
 
-        bumpX *= 0.75f
-        bumpY *= 0.75f
+        bumpX *= bumpFrict.pow(tmod)
+        bumpY *= bumpFrict.pow(tmod)
 
         if (clampToBounds) {
             clampedFocus.x = if (viewBounds.width < width) {
@@ -123,8 +152,8 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
     }
 
     private fun sync() {
-        var targetX = fixedProgressionRatio.interpolate(lastX, clampedFocus.x)
-        var targetY = fixedProgressionRatio.interpolate(lastY, clampedFocus.y)
+        var targetX = clampedFocus.x
+        var targetY = clampedFocus.y
         if (cd.has(SHAKE)) {
             targetX += cos(shakeFrames * 1.1f) * 2.5f * shakePower * cd.ratio(SHAKE)
             targetY += sin(0.3f + shakeFrames * 1.7f) * 2.5f * shakePower * cd.ratio(SHAKE)
@@ -132,7 +161,6 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
         } else {
             shakeFrames = 0
         }
-
 
 
         val tx = (targetX * ppu).floor() / ppu

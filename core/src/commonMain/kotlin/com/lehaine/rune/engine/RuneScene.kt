@@ -40,17 +40,20 @@ open class RuneScene(val context: Context) {
     var dispose: () -> Unit = {}
 
     val fixedProgressionRatio: Float get() = _fixedProgressionRatio
-    var timesPerSecond: Int = 30
+    var fixedTimesPerSecond: Int = 30
         set(value) {
             field = value
             time = (1f / value).seconds
         }
-
+    var targetFPS = 60
+    var tmod = 1f
+        private set
     private var accum = 0.milliseconds
     private var _fixedProgressionRatio = 1f
-    private var time = (1f / timesPerSecond).seconds
+    private var time = (1f / fixedTimesPerSecond).seconds
 
     internal fun step(dt: Duration) {
+        tmod = dt.seconds * targetFPS
         accum += dt
         while (accum >= time) {
             accum -= time
