@@ -5,13 +5,22 @@ import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.math.interpolate
 import com.lehaine.littlekt.util.*
 import com.lehaine.rune.engine.Cooldown
-import com.lehaine.rune.engine.node.FixedUpdaterNode
+import com.lehaine.rune.engine.RuneScene
 import com.lehaine.rune.engine.renderable.AnimatedSprite
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.time.Duration
+
+@OptIn(ExperimentalContracts::class)
+fun RuneScene.entity(gridCellSize: Float, callback: Entity.() -> Unit = {}): Entity {
+    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
+    return Entity(gridCellSize).also(callback).addTo(this)
+}
 
 open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     var cx: Int = 0
@@ -94,17 +103,12 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     val bottom get() = attachY + (1 - anchorY) * height
     val left get() = attachX - anchorX * width
 
-    private var fixedUpdater: FixedUpdaterNode? = null
-
     /**
      * The ratio to interpolate the last position to the new position.
      */
     val fixedProgressionRatio: Float get() = scene?.fixedProgressionRatio ?: 1f
 
     val cooldown = Cooldown()
-
-    val onFixedUpdate: Signal = signal()
-    val onPostUpdate: SingleSignal<Duration> = signal1v()
 
     init {
         anchorX = 0.5f
@@ -117,13 +121,13 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     }
 
     override fun render(batch: Batch, camera: Camera) {
-        textureSlice?.let {
+        slice?.let {
             batch.draw(
                 it, px, py,
                 anchorX * it.originalWidth,
                 anchorY * it.originalHeight,
-                scaleX = entityScaleX,
-                scaleY = entityScaleY,
+                scaleX = entityScaleX * ppuInv,
+                scaleY = entityScaleY * ppuInv,
                 rotation = rotation
             )
         }
@@ -131,7 +135,6 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
 
     override fun fixedUpdate() {
         updateGridPosition()
-        onFixedUpdate.emit()
     }
 
     override fun postUpdate(dt: Duration) {
@@ -140,8 +143,6 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
         entityScaleY = scaleY * stretchY
         _stretchX += (1 - _stretchX) * min(1f, restoreSpeed * dt.seconds)
         _stretchY += (1 - _stretchY) * min(1f, restoreSpeed * dt.seconds)
-
-        onPostUpdate.emit(dt)
     }
 
 

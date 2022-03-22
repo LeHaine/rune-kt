@@ -5,7 +5,19 @@ import com.lehaine.littlekt.graphics.AnimationPlayer
 import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.util.SingleSignal
 import com.lehaine.littlekt.util.signal1v
+import com.lehaine.rune.engine.RuneScene
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.time.Duration
+
+@OptIn(ExperimentalContracts::class)
+fun RuneScene.animatedSprite(
+    callback: AnimatedSprite.() -> Unit = {}
+): AnimatedSprite {
+    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
+    return AnimatedSprite().also(callback).addTo(this)
+}
 
 /**
  * @author Colton Daily
@@ -42,7 +54,7 @@ open class AnimatedSprite : Sprite() {
     fun stop() = player.stop()
 
     private fun handleFrameChange(frame: Int) {
-        textureSlice = player.currentAnimation?.getFrame(frame) ?: textureSlice
+        slice = player.currentAnimation?.getFrame(frame) ?: slice
         onFrameChanged.emit(frame)
     }
 

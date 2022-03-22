@@ -4,6 +4,19 @@ import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.graphics.toFloatBits
+import com.lehaine.rune.engine.RuneScene
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
+
+@OptIn(ExperimentalContracts::class)
+fun RuneScene.sprite(
+    callback: Sprite.() -> Unit = {}
+): Sprite {
+    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
+    return Sprite().also(callback).addTo(this)
+}
 
 /**
  * @author Colton Daily
@@ -12,10 +25,10 @@ import com.lehaine.littlekt.graphics.toFloatBits
 open class Sprite : Renderable2D() {
 
     override val renderWidth: Float
-        get() = if(overrideWidth) overriddenWidth  else textureSlice?.width?.toFloat() ?: 0f
+        get() = if (overrideWidth) overriddenWidth else slice?.width?.toFloat() ?: 0f
 
     override val renderHeight: Float
-        get() = if(overrideHeight) overriddenHeight else textureSlice?.height?.toFloat() ?: 0f
+        get() = if (overrideHeight) overriddenHeight else slice?.height?.toFloat() ?: 0f
 
     var overrideWidth = false
     var overrideHeight = false
@@ -33,10 +46,10 @@ open class Sprite : Renderable2D() {
      */
     var flipY = false
 
-    var textureSlice: TextureSlice? = null
+    var slice: TextureSlice? = null
 
     override fun render(batch: Batch, camera: Camera) {
-        textureSlice?.let {
+        slice?.let {
             batch.draw(
                 it,
                 x + localOffsetX,
@@ -45,8 +58,8 @@ open class Sprite : Renderable2D() {
                 anchorY * it.height,
                 width = renderWidth,
                 height = renderHeight,
-                scaleX = scaleX,
-                scaleY = scaleY,
+                scaleX = scaleX * ppuInv,
+                scaleY = scaleY * ppuInv,
                 flipX = flipX,
                 flipY = flipY,
                 rotation = rotation,

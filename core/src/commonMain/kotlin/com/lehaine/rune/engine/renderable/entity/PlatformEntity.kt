@@ -1,6 +1,20 @@
 package com.lehaine.rune.engine.renderable.entity
 
 import com.lehaine.rune.engine.GameLevel
+import com.lehaine.rune.engine.RuneScene
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
+@OptIn(ExperimentalContracts::class)
+fun RuneScene.platformEntity(
+    level: GameLevel<*>,
+    gridCellSize: Float,
+    callback: PlatformEntity.() -> Unit = {}
+): PlatformEntity {
+    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
+    return PlatformEntity(level, gridCellSize).also(callback).addTo(this)
+}
 
 open class PlatformEntity(level: GameLevel<*>, gridCellSize: Float) : LevelEntity(level, gridCellSize) {
     val onGround

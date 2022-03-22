@@ -7,7 +7,19 @@ import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
 import com.lehaine.littlekt.util.fastForEach
+import com.lehaine.rune.engine.RuneScene
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
+
+@OptIn(ExperimentalContracts::class)
+fun RuneScene.particleSimulator(
+    callback: ParticleSimulatorRenderable.() -> Unit = {}
+): ParticleSimulatorRenderable {
+    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
+    return ParticleSimulatorRenderable().also(callback).addTo(this)
+}
 
 class ParticleSimulatorRenderable : Renderable2D() {
 
@@ -39,8 +51,8 @@ class ParticleSimulatorRenderable : Renderable2D() {
                     it.y + y,
                     it.anchorX * it.slice.width,
                     it.anchorY * it.slice.height,
-                    scaleX = it.scaleX * scaleX,
-                    scaleY = it.scaleY * scaleY,
+                    scaleX = it.scaleX * scaleX * ppuInv,
+                    scaleY = it.scaleY * scaleY * ppuInv,
                     rotation = it.rotation + rotation,
                     colorBits = it.colorBits
                 )

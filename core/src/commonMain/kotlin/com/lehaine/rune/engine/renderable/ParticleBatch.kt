@@ -6,8 +6,20 @@ import com.lehaine.littlekt.graphics.Particle
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
 import com.lehaine.littlekt.util.fastForEach
+import com.lehaine.rune.engine.RuneScene
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.time.Duration
 
+
+@OptIn(ExperimentalContracts::class)
+fun RuneScene.particleBatch(
+    callback: ParticleBatch.() -> Unit = {}
+): ParticleBatch {
+    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
+    return ParticleBatch().also(callback).addTo(this)
+}
 
 class ParticleBatch : Renderable2D() {
 
@@ -48,8 +60,8 @@ class ParticleBatch : Renderable2D() {
                     it.y + y,
                     it.anchorX * it.slice.width,
                     it.anchorY * it.slice.height,
-                    scaleX = it.scaleX * scaleX,
-                    scaleY = it.scaleY * scaleY,
+                    scaleX = it.scaleX * scaleX * ppuInv,
+                    scaleY = it.scaleY * scaleY * ppuInv,
                     rotation = it.rotation + rotation,
                     colorBits = it.colorBits
                 )

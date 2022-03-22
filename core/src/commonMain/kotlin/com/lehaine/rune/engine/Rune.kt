@@ -42,24 +42,20 @@ open class Rune(context: Context) : ContextListener(context) {
     final override suspend fun Context.start() {
         create()
         onResize { width, height ->
-            scene?.resize?.invoke(width, height)
+            scene?.resize(width, height)
         }
 
         onRender { dt ->
             scene?.let { _scene ->
 
                 if (initialize) {
-                    with(_scene) {
-                        context.initialize()
-                    }
+                    _scene.initialize()
                     _scene.resize(context.graphics.width, context.graphics.height)
 
                     initialize = false
                 }
 
-                _scene.preUpdate(dt)
                 _scene.step(dt)
-                _scene.postUpdate(dt)
 
                 nextScene?.let { _nextScene ->
                     _scene.dispose()
@@ -69,14 +65,11 @@ open class Rune(context: Context) : ContextListener(context) {
                         rune = this@Rune
                     }
                     onSceneChanged()
-                    with(_nextScene) {
-                        context.initialize()
-                    }
+                    _nextScene.initialize()
                     _nextScene.resize(context.graphics.width, context.graphics.height)
                 }
             }
-            scene?.render?.invoke()
-            scene?.postRender?.invoke()
+            scene?.render()
         }
     }
 

@@ -6,8 +6,22 @@ import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkIntGridLayer
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkLevel
 import com.lehaine.littlekt.math.clamp
 import com.lehaine.rune.engine.GameLevel
+import com.lehaine.rune.engine.RuneScene
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
-open class LDtkGameLevelNode<LevelMark>(var level: LDtkLevel) : Renderable2D(), GameLevel<LevelMark> {
+
+@OptIn(ExperimentalContracts::class)
+fun <LevelMark> RuneScene.ldtkLevel(
+    level: LDtkLevel,
+    callback: LDtkGameLevelRenderable<LevelMark>.() -> Unit = {}
+): LDtkGameLevelRenderable<LevelMark> {
+    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
+    return LDtkGameLevelRenderable<LevelMark>(level).also(callback).addTo(this)
+}
+
+open class LDtkGameLevelRenderable<LevelMark>(var level: LDtkLevel) : Renderable2D(), GameLevel<LevelMark> {
     override var gridSize: Int = 16
 
     override val renderWidth: Float
@@ -67,7 +81,7 @@ open class LDtkGameLevelNode<LevelMark>(var level: LDtkLevel) : Renderable2D(), 
     protected open fun createLevelMarks() = Unit
 
     override fun render(batch: Batch, camera: Camera) {
-        level.render(batch, camera, x, y, scaleY / scaleY * scaleX)
+        level.render(batch, camera, x, y, (scaleY / scaleY * scaleX)*ppuInv)
     }
 
 }

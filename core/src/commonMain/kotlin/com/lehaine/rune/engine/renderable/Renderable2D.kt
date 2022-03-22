@@ -1,8 +1,10 @@
 package com.lehaine.rune.engine.renderable
 
+import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.Color
+import com.lehaine.littlekt.input.Input
 import com.lehaine.littlekt.math.Mat3
 import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.Rect
@@ -124,6 +126,12 @@ abstract class Renderable2D {
             boundsDirty = true
         }
 
+    val context: Context
+        get() = scene?.context
+            ?: error("This Renderable2D could not get a context. Check to see if it is added to a RuneScene and if that RuneScene is the main scene!")
+    val contextOrNull: Context? get() = scene?.context
+
+    val input: Input get() = context.input
 
     /**
      * Used by a [Renderer] to specify how this [Renderable2D] should be rendered.
@@ -136,6 +144,15 @@ abstract class Renderable2D {
     var color = Color.WHITE
 
     var scene: RuneScene? = null
+        set(value) {
+            if (field == value) return
+            field?.renderables?.remove(this)
+            field = value
+            field?.renderables?.add(this)
+        }
+
+    val ppu: Float get() = scene?.ppu ?: 1f
+    val ppuInv: Float get() = scene?.ppuInv ?: 1f
 
     private val transMat = Mat3()
     private val tempMat = Mat3()
@@ -206,5 +223,11 @@ abstract class Renderable2D {
 
             _bounds.set(minX, minY, maxX - minX, maxY - minY)
         }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Renderable2D> addTo(scene: RuneScene): T {
+        this.scene = scene
+        return this as T
     }
 }

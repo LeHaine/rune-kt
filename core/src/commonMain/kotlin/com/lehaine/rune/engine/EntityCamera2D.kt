@@ -1,34 +1,29 @@
 package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.graphics.OrthographicCamera
-import com.lehaine.littlekt.math.MutableVec2f
-import com.lehaine.littlekt.math.Rect
-import com.lehaine.littlekt.math.clamp
-import com.lehaine.littlekt.math.floor
+import com.lehaine.littlekt.math.*
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.cosine
 import com.lehaine.littlekt.math.geom.radians
 import com.lehaine.littlekt.math.geom.sine
-import com.lehaine.rune.engine.node.FixedUpdaterNode
 import com.lehaine.rune.engine.renderable.entity.Entity
 import kotlin.math.*
 import kotlin.time.Duration
 
 class EntityCamera2D : OrthographicCamera(0f, 0f) {
-    var viewWidth: Float = 0f
-    var viewHeight: Float = 0f
-    private val viewBounds: Rect = Rect()
+    val viewBounds: Rect = Rect()
+    val offset = MutableVec2f()
     var clampToBounds = true
     var brakeDistanceNearBounds = 0.1f
     var following: Entity? = null
         private set
 
-    var snapToPixel = true
     var deadZonePctX = 0.04f
     var deadZonePctY = 0.1f
 
     var friction = 0.89f
     var trackingSpeed = 1f
+    var ppu = 1f
 
     private var shakePower = 1f
     private var shakeFrames = 0
@@ -47,17 +42,16 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
 
     private val cd = Cooldown()
 
+    var scaledDistX: Float = 0f
+        private set
+    var scaledDistY: Float = 0f
+
     private var lastX = 0f
     private var lastY = 0f
-
-    init {
-        snapToPixel = true
-    }
+    var fixedProgressionRatio = 1f
 
     fun update(dt: Duration) {
         cd.update(dt)
-        viewBounds.width = viewWidth
-        viewBounds.height = viewHeight
         sync()
     }
 
@@ -129,8 +123,8 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
     }
 
     private fun sync() {
-        var targetX = clampedFocus.x//fixedProgressionRatio.interpolate(lastX, clampedFocus.x)
-        var targetY = clampedFocus.y//fixedProgressionRatio.interpolate(lastY, clampedFocus.y)
+        var targetX = fixedProgressionRatio.interpolate(lastX, clampedFocus.x)
+        var targetY = fixedProgressionRatio.interpolate(lastY, clampedFocus.y)
         if (cd.has(SHAKE)) {
             targetX += cos(shakeFrames * 1.1f) * 2.5f * shakePower * cd.ratio(SHAKE)
             targetY += sin(0.3f + shakeFrames * 1.7f) * 2.5f * shakePower * cd.ratio(SHAKE)
@@ -139,11 +133,15 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
             shakeFrames = 0
         }
 
-        val finalX = targetX - position.x
-        val finalY = targetY - position.y
 
-        position.x += if (snapToPixel) finalX.roundToInt().toFloat() else finalX
-        position.y += if (snapToPixel) finalY.roundToInt().toFloat() else finalY
+
+        val tx = (targetX * ppu).floor() / ppu
+        val ty = (targetY * ppu).floor() / ppu
+        scaledDistX = (targetX - tx) * ppu
+        scaledDistY = (targetY - ty) * ppu
+
+        position.x = tx
+        position.y = ty
     }
 
     fun shake(time: Duration, power: Float = 1f) {
