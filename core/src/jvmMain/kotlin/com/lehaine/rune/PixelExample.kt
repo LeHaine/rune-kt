@@ -95,7 +95,7 @@ class PixelExampleScene(context: Context) : RuneScene(context) {
             fboRegion = TextureSlice(fbo.colorBufferTexture, 0, (fbo.height - pxHeight), pxWidth, pxHeight)
 
             sceneCamera.apply {
-                offset.set((fbo.width - pxWidth) * 0.5f, fbo.height * 0.5f - (fbo.height - pxHeight))
+                offset.set(((fbo.width - pxWidth) / 2).toFloat(), ((fbo.height - pxHeight) / 2).toFloat())
                 ortho(fbo.width * ppuInv, fbo.height * ppuInv)
             }
         }
