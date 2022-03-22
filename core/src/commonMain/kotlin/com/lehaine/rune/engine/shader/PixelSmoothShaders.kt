@@ -38,7 +38,7 @@ class PixelSmoothVertexShader : VertexShaderModel() {
             vec2 uvSize = u_textureSizes.xy;
 
             v_texCoords.x = a_texCoord0.x + u_sampleProperties.z / uvSize.x;
-            v_texCoords.y = a_texCoord0.y + u_sampleProperties.w / uvSize.y;
+            v_texCoords.y = a_texCoord0.y - u_sampleProperties.w / uvSize.y;
 
             gl_Position = u_projTrans * a_position;
         }
