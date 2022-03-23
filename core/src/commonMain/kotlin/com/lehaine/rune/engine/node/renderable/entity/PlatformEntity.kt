@@ -1,13 +1,14 @@
-package com.lehaine.rune.engine.renderable.entity
+package com.lehaine.rune.engine.node.renderable.entity
 
+import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.rune.engine.GameLevel
-import com.lehaine.rune.engine.RuneScene
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
-fun RuneScene.platformEntity(
+fun Node.platformEntity(
     level: GameLevel<*>,
     gridCellSize: Float,
     callback: PlatformEntity.() -> Unit = {}

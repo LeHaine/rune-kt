@@ -4,10 +4,6 @@ import com.lehaine.littlekt.graphics.shader.FragmentShaderModel
 import com.lehaine.littlekt.graphics.shader.ShaderParameter
 import com.lehaine.littlekt.graphics.shader.VertexShaderModel
 
-/**
- * @author Colton Daily
- * @date 3/22/2022
- */
 class PixelSmoothVertexShader : VertexShaderModel() {
     val uProjTrans = ShaderParameter.UniformMat4("u_projTrans")
     val uTextureSizes = ShaderParameter.UniformVec4("u_textureSizes")
@@ -46,10 +42,6 @@ class PixelSmoothVertexShader : VertexShaderModel() {
 }
 
 
-/**
- * @author Colton Daily
- * @date 3/22/2022
- */
 class PixelSmoothFragmentShader : FragmentShaderModel() {
     val uTexture = ShaderParameter.UniformSample2D("u_texture")
     val uTextureSizes = ShaderParameter.UniformVec4("u_textureSizes")
@@ -69,6 +61,7 @@ class PixelSmoothFragmentShader : FragmentShaderModel() {
         {
             vec2 uv = v_texCoords;
             vec2 uvSize = u_textureSizes.xy;
+
 
             float dU = 1.0 / uvSize.x;
             float dV = 1.0 / uvSize.y;

@@ -1,12 +1,13 @@
-package com.lehaine.rune.engine.renderable.entity
+package com.lehaine.rune.engine.node.renderable.entity
 
+import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.math.interpolate
 import com.lehaine.littlekt.util.*
 import com.lehaine.rune.engine.Cooldown
-import com.lehaine.rune.engine.RuneScene
-import com.lehaine.rune.engine.renderable.AnimatedSprite
+import com.lehaine.rune.engine.node.renderable.AnimatedSprite
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -17,7 +18,7 @@ import kotlin.math.min
 import kotlin.time.Duration
 
 @OptIn(ExperimentalContracts::class)
-fun RuneScene.entity(gridCellSize: Float, callback: Entity.() -> Unit = {}): Entity {
+fun Node.entity(gridCellSize: Float, callback: Entity.() -> Unit = {}): Entity {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return Entity(gridCellSize).also(callback).addTo(this)
 }
@@ -103,11 +104,6 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     val bottom get() = attachY + (1 - anchorY) * height
     val left get() = attachX - anchorX * width
 
-    /**
-     * The ratio to interpolate the last position to the new position.
-     */
-    val fixedProgressionRatio: Float get() = scene?.fixedProgressionRatio ?: 1f
-
     val cooldown = Cooldown()
 
     init {
@@ -138,7 +134,7 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     }
 
     override fun postUpdate(dt: Duration) {
-        _position.set(px, py)
+        position(px, py, false)
         entityScaleX = scaleX * dir * stretchX
         entityScaleY = scaleY * stretchY
         _stretchX += (1 - _stretchX) * min(1f, restoreSpeed * dt.seconds)

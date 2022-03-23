@@ -1,8 +1,7 @@
-package com.lehaine.rune.engine.renderable
+package com.lehaine.rune.engine.node.renderable
 
-import com.lehaine.littlekt.Context
+import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graphics.Batch
-import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.Color
 import com.lehaine.littlekt.input.Input
 import com.lehaine.littlekt.math.Mat3
@@ -10,40 +9,9 @@ import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.math.Vec2f
 import com.lehaine.littlekt.math.geom.Angle
-import com.lehaine.rune.engine.RuneScene
-import com.lehaine.rune.engine.render.BlendMode
 import kotlin.time.Duration
 
-abstract class Renderable2D {
-    protected val _position = MutableVec2f()
-    val position: Vec2f get() = _position
-    var x: Float
-        get() = _position.x
-        set(value) {
-            _position.x = value
-            onPositionChanged()
-        }
-    var y: Float
-        get() = _position.y
-        set(value) {
-            _position.y = value
-            onPositionChanged()
-        }
-
-    var rotation: Angle = Angle.ZERO
-
-    protected val _scale = MutableVec2f(1f)
-    val scale: Vec2f get() = _scale
-    var scaleX: Float
-        get() = _scale.x
-        set(value) {
-            _scale.x = value
-        }
-    var scaleY: Float
-        get() = _scale.y
-        set(value) {
-            _scale.y = value
-        }
+abstract class Renderable2D : Node2D() {
 
     /**
      * The width of the [Renderable2D].
@@ -126,33 +94,12 @@ abstract class Renderable2D {
             boundsDirty = true
         }
 
-    val context: Context
-        get() = scene?.context
-            ?: error("This Renderable2D could not get a context. Check to see if it is added to a RuneScene and if that RuneScene is the main scene!")
-    val contextOrNull: Context? get() = scene?.context
-
     val input: Input get() = context.input
-
-    /**
-     * Used by a [Renderer] to specify how this [Renderable2D] should be rendered.
-     */
-    var blendMode: BlendMode = BlendMode.Alpha
 
     /**
      * Color that is passed along to the [Batch].
      */
     var color = Color.WHITE
-
-    var scene: RuneScene? = null
-        set(value) {
-            if (field == value) return
-            field?.renderables?.remove(this)
-            field = value
-            field?.renderables?.add(this)
-        }
-
-    val ppu: Float get() = scene?.ppu ?: 1f
-    val ppuInv: Float get() = scene?.ppuInv ?: 1f
 
     private val transMat = Mat3()
     private val tempMat = Mat3()
@@ -168,13 +115,6 @@ abstract class Renderable2D {
     protected var _bounds = Rect()
     protected var boundsDirty = true
 
-    open fun onPositionChanged() = Unit
-    open fun render(batch: Batch, camera: Camera) = Unit
-    open fun preUpdate(dt: Duration) = Unit
-    open fun update(dt: Duration) = Unit
-    open fun postUpdate(dt: Duration) = Unit
-    open fun fixedUpdate() = Unit
-    open fun onDestroy() = Unit
 
     protected fun calculateBounds(
         position: Vec2f,
@@ -223,11 +163,5 @@ abstract class Renderable2D {
 
             _bounds.set(minX, minY, maxX - minX, maxY - minY)
         }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Renderable2D> addTo(scene: RuneScene): T {
-        this.scene = scene
-        return this as T
     }
 }

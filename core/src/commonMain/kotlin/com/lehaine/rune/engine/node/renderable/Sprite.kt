@@ -1,17 +1,18 @@
-package com.lehaine.rune.engine.renderable
+package com.lehaine.rune.engine.node.renderable
 
+import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.graphics.toFloatBits
-import com.lehaine.rune.engine.RuneScene
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 
 @OptIn(ExperimentalContracts::class)
-fun RuneScene.sprite(
+fun Node.sprite(
     callback: Sprite.() -> Unit = {}
 ): Sprite {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
@@ -52,17 +53,17 @@ open class Sprite : Renderable2D() {
         slice?.let {
             batch.draw(
                 it,
-                x + localOffsetX,
-                y + localOffsetY,
+                globalX + localOffsetX,
+                globalX + localOffsetY,
                 anchorX * it.width,
                 anchorY * it.height,
                 width = renderWidth,
                 height = renderHeight,
-                scaleX = scaleX * ppuInv,
-                scaleY = scaleY * ppuInv,
+                scaleX = globalScaleX * ppuInv,
+                scaleY = globalScaleY * ppuInv,
                 flipX = flipX,
                 flipY = flipY,
-                rotation = rotation,
+                rotation = globalRotation,
                 colorBits = color.toFloatBits()
             )
         }

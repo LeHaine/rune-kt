@@ -1,9 +1,11 @@
-package com.lehaine.rune.engine.renderable
+package com.lehaine.rune.engine.node.renderable
 
+import com.lehaine.littlekt.graph.SceneGraph
+import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
-import com.lehaine.littlekt.graphics.ParticleSimulator
-import com.lehaine.littlekt.graphics.TextureSlice
+import com.lehaine.littlekt.graphics.Particle
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
 import com.lehaine.littlekt.util.fastForEach
@@ -11,48 +13,58 @@ import com.lehaine.rune.engine.RuneScene
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.time.Duration
 
 
 @OptIn(ExperimentalContracts::class)
-fun RuneScene.particleSimulator(
-    callback: ParticleSimulatorRenderable.() -> Unit = {}
-): ParticleSimulatorRenderable {
+fun Node.particleBatch(
+    callback: ParticleBatch.() -> Unit = {}
+): ParticleBatch {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
-    return ParticleSimulatorRenderable().also(callback).addTo(this)
+    return ParticleBatch().also(callback).addTo(this)
 }
 
-class ParticleSimulatorRenderable : Renderable2D() {
+class ParticleBatch : Renderable2D() {
 
     // max value because we handle culling internally
     override val renderWidth: Float = Float.MAX_VALUE
     override val renderHeight: Float = Float.MAX_VALUE
 
-    var maxParticles = 2048
+    private val particles = mutableListOf<Particle>()
 
-    private val simulator by lazy { ParticleSimulator(maxParticles) }
+    fun add(particle: Particle) {
+        particles += particle
+    }
 
-    fun alloc(slice: TextureSlice, x: Float, y: Float) = simulator.alloc(slice, x, y)
+    override fun update(dt: Duration) {
+        particles.fastForEach {
+            if (it.killed || !it.alive) {
+                particles -= it
+            }
+        }
+    }
 
     override fun render(batch: Batch, camera: Camera) {
         viewBounds.calculateViewBounds(camera)
-        simulator.particles.fastForEach {
+        particles.fastForEach {
             if (!it.visible || !it.alive) return@fastForEach
 
             if (viewBounds.intersects(
-                    it.x + x,
-                    it.y + y,
+                    it.x + globalX,
+                    it.y + globalY,
                     it.slice.width.toFloat(),
                     it.slice.height.toFloat()
                 )
             ) {
+
                 batch.draw(
                     it.slice,
-                    it.x + x,
-                    it.y + y,
+                    it.x + globalX,
+                    it.y + globalY,
                     it.anchorX * it.slice.width,
                     it.anchorY * it.slice.height,
-                    scaleX = it.scaleX * scaleX * ppuInv,
-                    scaleY = it.scaleY * scaleY * ppuInv,
+                    scaleX = it.scaleX * globalScaleX * ppuInv,
+                    scaleY = it.scaleY * globalScaleY * ppuInv,
                     rotation = it.rotation + rotation,
                     colorBits = it.colorBits
                 )

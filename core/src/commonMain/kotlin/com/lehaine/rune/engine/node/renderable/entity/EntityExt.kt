@@ -1,4 +1,4 @@
-package com.lehaine.rune.engine.renderable.entity
+package com.lehaine.rune.engine.node.renderable.entity
 
 import com.lehaine.littlekt.math.castRay
 import com.lehaine.littlekt.math.dist

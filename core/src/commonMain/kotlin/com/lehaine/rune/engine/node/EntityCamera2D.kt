@@ -1,5 +1,7 @@
-package com.lehaine.rune.engine
+package com.lehaine.rune.engine.node
 
+import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.OrthographicCamera
 import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.Rect
@@ -9,11 +11,23 @@ import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.cosine
 import com.lehaine.littlekt.math.geom.radians
 import com.lehaine.littlekt.math.geom.sine
-import com.lehaine.rune.engine.renderable.entity.Entity
+import com.lehaine.rune.engine.Cooldown
+import com.lehaine.rune.engine.node.renderable.entity.Entity
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.math.*
 import kotlin.time.Duration
 
-class EntityCamera2D : OrthographicCamera(0f, 0f) {
+@OptIn(ExperimentalContracts::class)
+fun Node.entityCamera2D(
+    callback: EntityCamera2D.() -> Unit = {}
+): EntityCamera2D {
+    contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
+    return EntityCamera2D().also(callback).addTo(this)
+}
+
+class EntityCamera2D : Node() {
     val viewBounds: Rect = Rect()
     val offset = MutableVec2f()
     var clampToBounds = true
@@ -27,7 +41,6 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
     var friction = 0.89f
     var bumpFrict = 0.85f
     var trackingSpeed = 1f
-    var ppu = 1f
 
     var shakePower = 1f
     var shakeFrames = 0
@@ -40,10 +53,17 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
     var targetZoom = 1f
     var zoomSpeed = 0.0014f
     var zoomFrict = 0.9f
-    val combinedZoom get() = zoom + bumpZoomFactor
 
-    private val width get() = virtualWidth * combinedZoom
-    private val height get() = virtualHeight * combinedZoom
+    var camera: OrthographicCamera? = null
+    var zoom: Float
+        get() = camera?.zoom ?: 0f
+        set(value) {
+            camera?.zoom = value
+        }
+    val combinedZoom get() = camera?.zoom?.plus(bumpZoomFactor) ?: 0f
+
+    private val width get() = camera?.virtualWidth?.times(combinedZoom) ?: 0f
+    private val height get() = camera?.virtualHeight?.times(combinedZoom) ?: 0f
 
     private val rawFocus = MutableVec2f()
     private val clampedFocus = MutableVec2f()
@@ -54,11 +74,20 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
         private set
     var scaledDistY: Float = 0f
 
-    var tmod: Float = 1f
+    val tmod: Float get() = scene?.tmod ?: 1f
 
-    fun update(dt: Duration, tmod: Float) {
+    override fun ready() {
+        super.ready()
+        (parent as? PixelSmoothFrameBuffer)?.let {
+            it.onFboChanged.connect(this) { _ ->
+                offset.set(((it.width - it.pxWidth) / 2).toFloat(), ((it.height - it.pxHeight) / 2).toFloat())
+            }
+        }
+    }
+
+    override fun update(dt: Duration) {
+        camera ?: context.logger.warn { "'EntityCamera2D' doesn't have a camera set!" }
         cd.update(dt)
-        this.tmod = tmod
         updatePosition()
         sync()
     }
@@ -168,8 +197,8 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
         scaledDistX = (targetX - tx) * ppu
         scaledDistY = (targetY - ty) * ppu
 
-        position.x = tx + offset.x
-        position.y = ty + offset.y
+        camera?.position?.x = tx + offset.x
+        camera?.position?.y = ty + offset.y
     }
 
     fun shake(time: Duration, power: Float = 1f) {
@@ -193,7 +222,7 @@ class EntityCamera2D : OrthographicCamera(0f, 0f) {
         following = entity
         if (setImmediately) {
             entity ?: error("Target entity not set!!")
-            position.set(entity.px, entity.py, 0f)
+            camera?.position?.set(entity.px, entity.py, 0f)
         }
     }
 

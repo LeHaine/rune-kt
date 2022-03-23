@@ -55,7 +55,7 @@ open class Rune(context: Context) : ContextListener(context) {
                     initialize = false
                 }
 
-                _scene.step(dt)
+                _scene.update(dt)
 
                 nextScene?.let { _nextScene ->
                     _scene.dispose()

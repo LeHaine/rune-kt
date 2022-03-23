@@ -1,19 +1,20 @@
-package com.lehaine.rune.engine.renderable
+package com.lehaine.rune.engine.node.renderable
 
+import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkIntGridLayer
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkLevel
 import com.lehaine.littlekt.math.clamp
 import com.lehaine.rune.engine.GameLevel
-import com.lehaine.rune.engine.RuneScene
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 
 @OptIn(ExperimentalContracts::class)
-fun <LevelMark> RuneScene.ldtkLevel(
+fun <LevelMark> Node.ldtkLevel(
     level: LDtkLevel,
     callback: LDtkGameLevelRenderable<LevelMark>.() -> Unit = {}
 ): LDtkGameLevelRenderable<LevelMark> {
@@ -81,7 +82,7 @@ open class LDtkGameLevelRenderable<LevelMark>(var level: LDtkLevel) : Renderable
     protected open fun createLevelMarks() = Unit
 
     override fun render(batch: Batch, camera: Camera) {
-        level.render(batch, camera, x, y, (scaleY / scaleY * scaleX)*ppuInv)
+        level.render(batch, camera, globalX, globalY, (globalScaleY / globalScaleY * globalScaleX) * ppuInv)
     }
 
 }

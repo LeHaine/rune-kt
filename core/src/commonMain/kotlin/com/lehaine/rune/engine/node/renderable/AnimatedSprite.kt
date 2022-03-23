@@ -1,18 +1,19 @@
-package com.lehaine.rune.engine.renderable
+package com.lehaine.rune.engine.node.renderable
 
+import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Animation
 import com.lehaine.littlekt.graphics.AnimationPlayer
 import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.util.SingleSignal
 import com.lehaine.littlekt.util.signal1v
-import com.lehaine.rune.engine.RuneScene
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.time.Duration
 
 @OptIn(ExperimentalContracts::class)
-fun RuneScene.animatedSprite(
+fun Node.animatedSprite(
     callback: AnimatedSprite.() -> Unit = {}
 ): AnimatedSprite {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }

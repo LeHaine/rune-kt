@@ -1,15 +1,16 @@
-package com.lehaine.rune.engine.renderable.entity
+package com.lehaine.rune.engine.node.renderable.entity
 
+import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkEntity
 import com.lehaine.rune.engine.GameLevel
-import com.lehaine.rune.engine.RuneScene
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.math.floor
 
 @OptIn(ExperimentalContracts::class)
-fun RuneScene.levelEntity(level: GameLevel<*>, gridCellSize: Float, callback: LevelEntity.() -> Unit = {}): LevelEntity {
+fun Node.levelEntity(level: GameLevel<*>, gridCellSize: Float, callback: LevelEntity.() -> Unit = {}): LevelEntity {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return LevelEntity(level, gridCellSize).also(callback).addTo(this)
 }
