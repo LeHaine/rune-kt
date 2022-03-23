@@ -39,7 +39,6 @@ class PixelExampleScene(context: Context) : RuneScene(context) {
 
     override var ppu: Float = 1f
 
-
     override suspend fun Node.initialize() {
         val person = resourcesVfs["test/heroIdle0.png"].readTexture(mipmaps = false).slice()
         val mapLoader = resourcesVfs["test/platformer.ldtk"].readLDtkMapLoader()
@@ -49,7 +48,9 @@ class PixelExampleScene(context: Context) : RuneScene(context) {
             val entityCamera: EntityCamera2D
 
             val fbo = pixelSmoothFrameBuffer {
-                val level = ldtkLevel<String>(world.levels[0])
+                val level = ldtkLevel<String>(world.levels[0]) {
+                    gridSize = 8
+                }
 
                 val player = player(level, 8f) {
                     slice = person

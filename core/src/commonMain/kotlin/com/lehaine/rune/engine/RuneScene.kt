@@ -2,12 +2,21 @@ package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
+import com.lehaine.littlekt.graphics.Color
+import com.lehaine.littlekt.graphics.gl.ClearBufferMask
+import com.lehaine.littlekt.util.viewport.ScreenViewport
 import com.lehaine.littlekt.util.viewport.Viewport
 
 /**
  * @author Colton Daily
  */
-open class RuneScene(context: Context, viewport: Viewport = Viewport()) : SceneGraph<String>(context, viewport) {
+open class RuneScene(
+    context: Context,
+    viewport: Viewport = ScreenViewport(
+        context.graphics.width,
+        context.graphics.height
+    )
+) : SceneGraph<String>(context, viewport) {
 
     val graphics get() = context.graphics
     val input get() = context.input
@@ -18,9 +27,16 @@ open class RuneScene(context: Context, viewport: Viewport = Viewport()) : SceneG
     val storageVfs get() = context.storageVfs
     val vfs get() = context.vfs
     val clipboard get() = context.clipboard
+    open var clearColor = Color.CLEAR
 
     var rune: Rune? = null
         internal set
+
+    override fun render() {
+        gl.clearColor(clearColor)
+        gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
+        super.render()
+    }
 
     fun changeTo(scene: RuneScene) {
         val rune = rune
