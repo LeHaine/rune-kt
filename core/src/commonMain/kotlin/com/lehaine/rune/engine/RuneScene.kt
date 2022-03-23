@@ -2,11 +2,12 @@ package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
+import com.lehaine.littlekt.util.viewport.Viewport
 
 /**
  * @author Colton Daily
  */
-open class RuneScene(context: Context) : SceneGraph<String>(context) {
+open class RuneScene(context: Context, viewport: Viewport = Viewport()) : SceneGraph<String>(context, viewport) {
 
     val graphics get() = context.graphics
     val input get() = context.input
