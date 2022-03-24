@@ -11,6 +11,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalContracts::class)
 fun Node.animatedSprite(
@@ -45,6 +46,11 @@ open class AnimatedSprite : Sprite() {
         anim.update()
     }
 
+    fun playOverlap(anim: Animation<TextureSlice>) = player.playOverlap(anim)
+
+    fun playOverlap(frame: TextureSlice, frameTime: Duration = 50.milliseconds, numFrames: Int = 1) =
+        player.playOverlap(frame, frameTime, numFrames)
+
     fun play(animation: Animation<TextureSlice>, times: Int = 1, force: Boolean = false) =
         player.play(animation, times, force)
 
@@ -70,8 +76,15 @@ open class AnimatedSprite : Sprite() {
         /**
          * Priority is represented by the deepest. The deepest has top priority while the shallowest has lowest.
          */
-        fun registerState(anim: Animation<TextureSlice>, loop: Boolean = true, reason: () -> Boolean) {
-            states.add(AnimationState(anim, loop, reason))
+        fun registerState(
+            anim: Animation<TextureSlice>,
+            priority: Int,
+            loop: Boolean = true,
+            reason: () -> Boolean = { true }
+        ) {
+            removeState(anim)
+            states.add(AnimationState(anim, priority, loop, reason))
+            states.sortedBy { it.priority }
         }
 
         fun removeState(anim: Animation<TextureSlice>) {
@@ -96,11 +109,21 @@ open class AnimatedSprite : Sprite() {
         }
     }
 
-    private data class AnimationState(val anim: Animation<TextureSlice>, val loop: Boolean, val reason: () -> Boolean)
+    private data class AnimationState(
+        val anim: Animation<TextureSlice>,
+        val priority: Int,
+        val loop: Boolean,
+        val reason: () -> Boolean
+    )
 }
 
-fun AnimatedSprite.registerState(anim: Animation<TextureSlice>, loop: Boolean = true, reason: () -> Boolean) =
-    this.anim.registerState(anim, loop, reason)
+fun AnimatedSprite.registerState(
+    anim: Animation<TextureSlice>,
+    priority: Int,
+    loop: Boolean = true,
+    reason: () -> Boolean = { true }
+) =
+    this.anim.registerState(anim, priority, loop, reason)
 
 fun AnimatedSprite.removeState(anim: Animation<TextureSlice>) = this.anim.removeState(anim)
 fun AnimatedSprite.removeAllStates() = anim.removeAllStates()
