@@ -5,7 +5,7 @@ import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.math.interpolate
-import com.lehaine.littlekt.util.*
+import com.lehaine.littlekt.util.seconds
 import com.lehaine.rune.engine.Cooldown
 import com.lehaine.rune.engine.node.renderable.AnimatedSprite
 import kotlin.contracts.ExperimentalContracts
@@ -127,6 +127,10 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
                 rotation = rotation
             )
         }
+    }
+
+    override fun preUpdate(dt: Duration) {
+        cd.update(dt)
     }
 
     override fun fixedUpdate() {
