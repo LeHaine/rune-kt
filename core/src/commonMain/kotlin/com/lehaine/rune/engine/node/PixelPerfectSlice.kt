@@ -79,4 +79,9 @@ class PixelPerfectSlice : Node2D() {
             )
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        smoothCameraShader.dispose()
+    }
 }
