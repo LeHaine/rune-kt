@@ -2,6 +2,7 @@ package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
+import com.lehaine.littlekt.graph.addDefaultUiInput
 import com.lehaine.littlekt.graphics.Color
 import com.lehaine.littlekt.graphics.gl.ClearBufferMask
 import com.lehaine.littlekt.util.viewport.ScreenViewport
@@ -16,7 +17,23 @@ open class RuneScene(
         context.graphics.width,
         context.graphics.height
     )
-) : SceneGraph<String>(context, viewport) {
+) : SceneGraph<String>(
+    context,
+    viewport,
+    uiInputSignals = UiInputSignals(
+        "ui_accept",
+        "ui_select",
+        "ui_cancel",
+        "ui_focus_next",
+        "ui_focus_prev",
+        "ui_left",
+        "ui_right",
+        "ui_up",
+        "ui_down",
+        "ui_home",
+        "ui_end"
+    )
+) {
 
     val graphics get() = context.graphics
     val input get() = context.input
@@ -27,10 +44,15 @@ open class RuneScene(
     val storageVfs get() = context.storageVfs
     val vfs get() = context.vfs
     val clipboard get() = context.clipboard
+
     open var clearColor = Color.CLEAR
 
     var rune: Rune? = null
         internal set
+
+    init {
+        controller.addDefaultUiInput(uiInputSignals)
+    }
 
     override fun render() {
         gl.clearColor(clearColor)
