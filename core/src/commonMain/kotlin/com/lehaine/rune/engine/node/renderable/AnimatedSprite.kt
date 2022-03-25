@@ -6,6 +6,7 @@ import com.lehaine.littlekt.graphics.Animation
 import com.lehaine.littlekt.graphics.AnimationPlayer
 import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.util.SingleSignal
+import com.lehaine.littlekt.util.fastForEach
 import com.lehaine.littlekt.util.signal1v
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -84,7 +85,7 @@ open class AnimatedSprite : Sprite() {
         ) {
             removeState(anim)
             states.add(AnimationState(anim, priority, loop, reason))
-            states.sortedBy { it.priority }
+            states.sortByDescending { priority }
         }
 
         fun removeState(anim: Animation<TextureSlice>) {
@@ -96,8 +97,8 @@ open class AnimatedSprite : Sprite() {
         }
 
         internal fun update() {
-            states.forEach { state ->
-                if (state.reason() && player.currentAnimation !== state.anim) {
+            states.fastForEach { state ->
+                if (state.reason()) {
                     if (state.loop) {
                         playLooped(state.anim)
                     } else {
