@@ -97,6 +97,8 @@ open class AnimatedSprite : Sprite() {
         }
 
         internal fun update() {
+            if (player.overlapPlaying) return
+
             states.fastForEach { state ->
                 if (state.reason()) {
                     if (state.loop) {
