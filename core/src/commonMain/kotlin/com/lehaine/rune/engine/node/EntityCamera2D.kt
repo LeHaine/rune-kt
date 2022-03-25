@@ -141,13 +141,13 @@ class EntityCamera2D : Node() {
                 frictX *= 1 - 0.9f * brakeRatio
             } else if (dx > 0) {
                 val brakeRatio = 1 - (((viewBounds.width - width * 0.5f) - rawFocus.x) / brakeDistX).clamp(0f, 1f)
-                frictY *= 1 - 0.9f * brakeRatio
+                frictX *= 1 - 0.9f * brakeRatio
             }
 
             val brakeDistY = brakeDistanceNearBounds * height
             if (dy < 0) {
                 val brakeRatio = 1 - ((rawFocus.y - height * 0.5f) / brakeDistY).clamp(0f, 1f)
-                frictX *= 1 - 0.9f * brakeRatio
+                frictY *= 1 - 0.9f * brakeRatio
             } else if (dy > 0) {
                 val brakeRatio = 1 - (((viewBounds.height - height * 0.5f) - rawFocus.y) / brakeDistY).clamp(0f, 1f)
                 frictY *= 1 - 0.9f * brakeRatio
