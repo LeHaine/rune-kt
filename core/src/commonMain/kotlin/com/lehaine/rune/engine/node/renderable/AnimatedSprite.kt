@@ -6,7 +6,6 @@ import com.lehaine.littlekt.graphics.Animation
 import com.lehaine.littlekt.graphics.AnimationPlayer
 import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.util.SingleSignal
-import com.lehaine.littlekt.util.fastForEach
 import com.lehaine.littlekt.util.signal1v
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -32,8 +31,6 @@ open class AnimatedSprite : Sprite() {
         onFrameChange = ::handleFrameChange
     }
 
-    val anim = AnimationManager()
-
     val onFrameChanged: SingleSignal<Int> = signal1v()
 
     val totalFramesPlayed: Int get() = player.totalFramesPlayed
@@ -42,22 +39,33 @@ open class AnimatedSprite : Sprite() {
 
     override fun update(dt: Duration) {
         super.update(dt)
-
         player.update(dt)
-        anim.update()
     }
 
-    fun playOverlap(anim: Animation<TextureSlice>) = player.playOverlap(anim)
+    fun play(anim: Animation<TextureSlice>) = player.play(anim)
 
-    fun playOverlap(frame: TextureSlice, frameTime: Duration = 50.milliseconds, numFrames: Int = 1) =
-        player.playOverlap(frame, frameTime, numFrames)
+    fun play(frame: TextureSlice, frameTime: Duration = 50.milliseconds, numFrames: Int = 1) =
+        player.play(frame, frameTime, numFrames)
 
-    fun play(animation: Animation<TextureSlice>, times: Int = 1, force: Boolean = false) =
-        player.play(animation, times, force)
+    fun play(animation: Animation<TextureSlice>, times: Int = 1) =
+        player.play(animation, times)
 
-    fun playLooped(animation: Animation<TextureSlice>, force: Boolean = false) = player.playLooped(animation, force)
+    fun play(animation: Animation<TextureSlice>, duration: Duration) = player.play(animation, duration)
 
-    fun playOnce(animation: Animation<TextureSlice>, force: Boolean = false) = player.playOnce(animation, force)
+    fun playLooped(animation: Animation<TextureSlice>) = player.playLooped(animation)
+
+    fun playOnce(animation: Animation<TextureSlice>) = player.playOnce(animation)
+
+    fun registerState(
+        anim: Animation<TextureSlice>,
+        priority: Int,
+        loop: Boolean = true,
+        reason: () -> Boolean = { true },
+    ) = player.registerState(anim, priority, loop, reason)
+
+    fun removeState(anim: Animation<TextureSlice>) = player.removeState(anim)
+
+    fun removeAllStates() = player.removeAllStates()
 
     fun stop() = player.stop()
 
@@ -70,63 +78,4 @@ open class AnimatedSprite : Sprite() {
         super.onDestroy()
         onFrameChanged.clear()
     }
-
-    inner class AnimationManager {
-        private val states = arrayListOf<AnimationState>()
-
-        /**
-         * Priority is represented by the deepest. The deepest has top priority while the shallowest has lowest.
-         */
-        fun registerState(
-            anim: Animation<TextureSlice>,
-            priority: Int,
-            loop: Boolean = true,
-            reason: () -> Boolean = { true }
-        ) {
-            removeState(anim)
-            states.add(AnimationState(anim, priority, loop, reason))
-            states.sortByDescending { priority }
-        }
-
-        fun removeState(anim: Animation<TextureSlice>) {
-            states.find { it.anim == anim }?.also { states.remove(it) }
-        }
-
-        fun removeAllStates() {
-            states.clear()
-        }
-
-        internal fun update() {
-            if (player.overlapPlaying) return
-
-            states.fastForEach { state ->
-                if (state.reason()) {
-                    if (state.loop) {
-                        playLooped(state.anim)
-                    } else {
-                        playOnce(state.anim)
-                    }
-                    return
-                }
-            }
-        }
-    }
-
-    private data class AnimationState(
-        val anim: Animation<TextureSlice>,
-        val priority: Int,
-        val loop: Boolean,
-        val reason: () -> Boolean
-    )
 }
-
-fun AnimatedSprite.registerState(
-    anim: Animation<TextureSlice>,
-    priority: Int,
-    loop: Boolean = true,
-    reason: () -> Boolean = { true }
-) =
-    this.anim.registerState(anim, priority, loop, reason)
-
-fun AnimatedSprite.removeState(anim: Animation<TextureSlice>) = this.anim.removeState(anim)
-fun AnimatedSprite.removeAllStates() = anim.removeAllStates()
