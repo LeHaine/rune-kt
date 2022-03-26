@@ -62,7 +62,7 @@ class PixelExampleScene(context: Context) : RuneScene(context) {
                     viewBounds.width = world.levels[0].pxWidth.toFloat()
                     viewBounds.height = world.levels[0].pxHeight.toFloat()
                     follow(player)
-                    camera = fboCamera
+                    camera = canvasCamera
 
                     onUpdate += {
                         if (input.isKeyJustPressed(Key.Z)) {

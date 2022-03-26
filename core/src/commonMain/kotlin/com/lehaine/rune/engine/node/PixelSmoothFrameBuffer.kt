@@ -31,7 +31,7 @@ class PixelSmoothFrameBuffer : FrameBufferNode() {
         pxHeight = height / (height / targetHeight)
         pxWidth = (width / (height / pxHeight))
         resizeFbo(pxWidth.nextPowerOfTwo, pxHeight.nextPowerOfTwo)
-        fboCamera.ortho(this.width * ppuInv, this.height * ppuInv)
-        fboCamera.update()
+        canvasCamera.ortho(this.width * ppuInv, this.height * ppuInv)
+        canvasCamera.update()
     }
 }
