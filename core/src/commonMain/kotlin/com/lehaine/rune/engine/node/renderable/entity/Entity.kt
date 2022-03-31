@@ -4,17 +4,17 @@ import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
+import com.lehaine.littlekt.math.geom.Angle
+import com.lehaine.littlekt.math.geom.radians
 import com.lehaine.littlekt.math.interpolate
 import com.lehaine.littlekt.util.seconds
 import com.lehaine.rune.engine.Cooldown
+import com.lehaine.rune.engine.node.PixelSmoothFrameBuffer
 import com.lehaine.rune.engine.node.renderable.AnimatedSprite
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.*
 import kotlin.time.Duration
 
 @OptIn(ExperimentalContracts::class)
@@ -105,6 +105,16 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     val left get() = attachX - anchorX * width
 
     val cooldown = Cooldown()
+
+    val mouseX get() = (canvas as? PixelSmoothFrameBuffer)?.mouseX ?: 0f
+    val mouseY get() = (canvas as? PixelSmoothFrameBuffer)?.mouseY ?: 0f
+    val angleToMouse: Angle
+        get() = atan2(
+            mouseY - centerY,
+            mouseX - centerX
+        ).radians
+
+    val dirToMouse: Int get() = dirTo(mouseX)
 
     init {
         anchorX = 0.5f
