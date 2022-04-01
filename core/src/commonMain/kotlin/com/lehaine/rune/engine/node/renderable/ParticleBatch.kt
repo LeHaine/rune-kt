@@ -1,15 +1,14 @@
 package com.lehaine.rune.engine.node.renderable
 
-import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.Particle
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
 import com.lehaine.littlekt.util.fastForEach
-import com.lehaine.rune.engine.RuneScene
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -24,11 +23,7 @@ fun Node.particleBatch(
     return ParticleBatch().also(callback).addTo(this)
 }
 
-class ParticleBatch : Renderable2D() {
-
-    // max value because we handle culling internally
-    override val renderWidth: Float = Float.MAX_VALUE
-    override val renderHeight: Float = Float.MAX_VALUE
+class ParticleBatch : Node2D() {
 
     private val particles = mutableListOf<Particle>()
 
@@ -52,11 +47,10 @@ class ParticleBatch : Renderable2D() {
             if (viewBounds.intersects(
                     it.x + globalX,
                     it.y + globalY,
-                    it.slice.width.toFloat(),
-                    it.slice.height.toFloat()
+                    it.x + globalX + it.slice.width * it.scaleX * globalScaleX * ppuInv,
+                    it.y + globalY + it.slice.height * it.scaleY * globalScaleY * ppuInv
                 )
             ) {
-
                 batch.draw(
                     it.slice,
                     it.x + globalX,

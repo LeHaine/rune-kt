@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node.renderable
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.ParticleSimulator
@@ -22,11 +23,7 @@ fun Node.particleSimulator(
     return ParticleSimulatorRenderable().also(callback).addTo(this)
 }
 
-class ParticleSimulatorRenderable : Renderable2D() {
-
-    // max value because we handle culling internally
-    override val renderWidth: Float = Float.MAX_VALUE
-    override val renderHeight: Float = Float.MAX_VALUE
+class ParticleSimulatorRenderable : Node2D() {
 
     var maxParticles = 2048
 
@@ -42,8 +39,8 @@ class ParticleSimulatorRenderable : Renderable2D() {
             if (viewBounds.intersects(
                     it.x + globalX,
                     it.y + globalY,
-                    it.slice.width.toFloat(),
-                    it.slice.height.toFloat()
+                    it.x + globalX + it.slice.width * it.scaleX * globalScaleX * ppuInv,
+                    it.y + globalY + it.slice.height * it.scaleY * globalScaleY * ppuInv
                 )
             ) {
                 batch.draw(
