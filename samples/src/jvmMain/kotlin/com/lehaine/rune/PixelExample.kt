@@ -7,8 +7,11 @@ import com.lehaine.littlekt.file.vfs.readTexture
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.canvasLayer
+import com.lehaine.littlekt.graph.node.ui.control
+import com.lehaine.littlekt.graph.node.ui.label
 import com.lehaine.littlekt.graphics.*
 import com.lehaine.littlekt.input.Key
+import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.random
 import com.lehaine.littlekt.util.seconds
 import com.lehaine.rune.engine.GameLevel
@@ -42,10 +45,11 @@ class PixelExample(context: Context) : Rune(context) {
 
 class PixelExampleScene(context: Context) : RuneScene(context) {
 
-    override var ppu: Float = 1f
+    override var ppu: Float = 8f
     private val particleSimulator = ParticleSimulator(2048)
     private lateinit var topNormal: ParticleBatch
     private lateinit var smallCircle: TextureSlice
+    private val mouseCoords = MutableVec2f()
 
     override suspend fun Node.initialize() {
         val person = resourcesVfs["test/heroIdle0.png"].readTexture(mipmaps = false).slice()
@@ -91,6 +95,11 @@ class PixelExampleScene(context: Context) : RuneScene(context) {
                         }
                     }
                 }
+
+                onUpdate += {
+                    mouseCoords.x = mouseX
+                    mouseCoords.y = mouseY
+                }
             }
 
             pixelPerfectSlice {
@@ -98,6 +107,13 @@ class PixelExampleScene(context: Context) : RuneScene(context) {
                 onUpdate += {
                     scaledDistX = entityCamera.scaledDistX
                     scaledDistY = entityCamera.scaledDistY
+                }
+            }
+        }
+        control {
+            label {
+                onUpdate += {
+                    text = "Mouse coords: $mouseCoords"
                 }
             }
         }

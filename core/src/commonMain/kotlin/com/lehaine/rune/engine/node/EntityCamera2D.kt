@@ -28,6 +28,9 @@ fun Node.entityCamera2D(
 }
 
 class EntityCamera2D : Node() {
+    /**
+     * The view bounds of this camera in 1:1 pixels unit. The [ppu] is taken into account in [trueViewBounds].
+     */
     val viewBounds: Rect = Rect()
     val offset = MutableVec2f()
     var clampToBounds = true
@@ -62,6 +65,14 @@ class EntityCamera2D : Node() {
         }
     val combinedZoom get() = camera?.zoom?.plus(bumpZoomFactor) ?: 0f
 
+    private val trueViewBounds
+        get() = _trueViewBounds.set(
+            0f,
+            0f,
+            viewBounds.width * ppuInv,
+            viewBounds.height * ppuInv
+        )
+    private val _trueViewBounds = Rect()
     private val width get() = camera?.virtualWidth?.times(combinedZoom) ?: 0f
     private val height get() = camera?.virtualHeight?.times(combinedZoom) ?: 0f
 
@@ -81,6 +92,7 @@ class EntityCamera2D : Node() {
         (parent as? PixelSmoothFrameBuffer)?.let {
             it.onFboChanged.connect(this) { _ ->
                 offset.set(((it.width - it.pxWidth) / 2).toFloat(), ((it.height - it.pxHeight) / 2).toFloat())
+                    .scale(ppuInv)
             }
         }
     }
@@ -140,7 +152,8 @@ class EntityCamera2D : Node() {
                 val brakeRatio = 1 - ((rawFocus.x - width * 0.5f) / brakeDistX).clamp(0f, 1f)
                 frictX *= 1 - 0.9f * brakeRatio
             } else if (dx > 0) {
-                val brakeRatio = 1 - (((viewBounds.width - width * 0.5f) - rawFocus.x) / brakeDistX).clamp(0f, 1f)
+                val brakeRatio =
+                    1 - (((trueViewBounds.width - width * 0.5f) - rawFocus.x) / brakeDistX).clamp(0f, 1f)
                 frictX *= 1 - 0.9f * brakeRatio
             }
 
@@ -149,7 +162,8 @@ class EntityCamera2D : Node() {
                 val brakeRatio = 1 - ((rawFocus.y - height * 0.5f) / brakeDistY).clamp(0f, 1f)
                 frictY *= 1 - 0.9f * brakeRatio
             } else if (dy > 0) {
-                val brakeRatio = 1 - (((viewBounds.height - height * 0.5f) - rawFocus.y) / brakeDistY).clamp(0f, 1f)
+                val brakeRatio =
+                    1 - (((trueViewBounds.height - height * 0.5f) - rawFocus.y) / brakeDistY).clamp(0f, 1f)
                 frictY *= 1 - 0.9f * brakeRatio
             }
         }
@@ -163,16 +177,16 @@ class EntityCamera2D : Node() {
         bumpY *= bumpFrict.pow(tmod)
 
         if (clampToBounds) {
-            clampedFocus.x = if (viewBounds.width < width - offset.x) {
-                viewBounds.width * 0.5f
+            clampedFocus.x = if (trueViewBounds.width < width - offset.x) {
+                trueViewBounds.width * 0.5f
             } else {
-                rawFocus.x.clamp(width * 0.5f - offset.x, viewBounds.width - width * 0.5f + offset.x)
+                rawFocus.x.clamp(width * 0.5f - offset.x, trueViewBounds.width - width * 0.5f + offset.x)
             }
 
-            clampedFocus.y = if (viewBounds.height < height - offset.y) {
-                viewBounds.height * 0.5f
+            clampedFocus.y = if (trueViewBounds.height < height - offset.y) {
+                trueViewBounds.height * 0.5f
             } else {
-                rawFocus.y.clamp(height * 0.5f - offset.y, viewBounds.height - height * 0.5f + offset.y)
+                rawFocus.y.clamp(height * 0.5f - offset.y, trueViewBounds.height - height * 0.5f + offset.y)
             }
         } else {
             clampedFocus.x = rawFocus.x
@@ -196,6 +210,7 @@ class EntityCamera2D : Node() {
         val ty = (targetY * ppu).floor() / ppu
         scaledDistX = (targetX - tx) * ppu
         scaledDistY = (targetY - ty) * ppu
+
 
         camera?.position?.x = tx + offset.x
         camera?.position?.y = ty + offset.y

@@ -54,8 +54,6 @@ class PixelSmoothFrameBuffer : FrameBufferNode() {
         val context = scene?.context ?: return
         val input = context.input
         val graphics = context.graphics
-        mouseWorldCoords.x = input.x.toFloat()
-        mouseWorldCoords.y = input.y.toFloat()
         mouseWorldCoords.x = (pxWidth / 100f) * ((100f / graphics.width) * input.x)
         mouseWorldCoords.y = (pxHeight / 100f) * ((100f / graphics.height) * input.y)
         mouseWorldCoords.x *= ppuInv
