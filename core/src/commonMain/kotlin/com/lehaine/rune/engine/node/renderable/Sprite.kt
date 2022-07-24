@@ -54,7 +54,7 @@ open class Sprite : Renderable2D() {
             batch.draw(
                 it,
                 globalX + localOffsetX,
-                globalX + localOffsetY,
+                globalY + localOffsetY,
                 anchorX * it.width,
                 anchorY * it.height,
                 width = renderWidth,
