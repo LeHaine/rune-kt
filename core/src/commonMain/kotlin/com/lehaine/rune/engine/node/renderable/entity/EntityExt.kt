@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node.renderable.entity
 
 import com.lehaine.littlekt.math.castRay
 import com.lehaine.littlekt.math.dist
+import com.lehaine.littlekt.math.geom.radians
 import kotlin.math.atan2
 import kotlin.time.Duration
 
@@ -40,7 +41,7 @@ fun Entity.distGridTo(target: Entity) = distGridTo(target.cx, target.cy, target.
 fun Entity.distPxTo(x: Float, y: Float) = dist(px, py, x, y)
 fun Entity.distPxTo(targetGridPosition: Entity) = distPxTo(targetGridPosition.px, targetGridPosition.py)
 
-fun Entity.angleTo(x: Float, y: Float) = atan2(y - py, x - px)
+fun Entity.angleTo(x: Float, y: Float) = atan2(y - py, x - px).radians
 fun Entity.angleTo(target: Entity) = angleTo(target.centerX, target.centerY)
 
 val Entity.cd get() = this.cooldown
