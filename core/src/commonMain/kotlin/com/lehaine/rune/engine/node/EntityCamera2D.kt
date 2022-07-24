@@ -104,6 +104,7 @@ class EntityCamera2D : Node() {
         sync()
     }
 
+
     fun updatePosition() {
         val tz = targetZoom
         if (tz != zoom) {
@@ -143,7 +144,7 @@ class EntityCamera2D : Node() {
             }
         }
 
-        var frictX = friction - combinedZoom * 0.054f * friction
+        var frictX = friction - trackingSpeed * combinedZoom * 0.054f * friction
         var frictY = frictX
 
         if (clampToBounds) {

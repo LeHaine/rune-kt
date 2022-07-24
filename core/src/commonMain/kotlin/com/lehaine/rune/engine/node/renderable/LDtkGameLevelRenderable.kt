@@ -38,8 +38,8 @@ open class LDtkGameLevelRenderable<LevelMark>(var level: LDtkLevel) : Renderable
             scaleY = value
         }
 
-    val levelWidth get() = level["Collisions"].gridWidth
-    val levelHeight get() = level["Collisions"].gridHeight
+    val levelWidth get() = level.layers[0].gridWidth
+    val levelHeight get() = level.layers[0].gridHeight
 
     protected val marks = mutableMapOf<LevelMark, MutableMap<Int, Int>>()
 
