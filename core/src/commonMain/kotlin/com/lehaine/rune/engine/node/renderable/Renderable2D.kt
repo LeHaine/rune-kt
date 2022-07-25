@@ -9,7 +9,6 @@ import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.math.Vec2f
 import com.lehaine.littlekt.math.geom.Angle
-import kotlin.time.Duration
 
 abstract class Renderable2D : Node2D() {
 
@@ -99,7 +98,7 @@ abstract class Renderable2D : Node2D() {
     /**
      * Color that is passed along to the [Batch].
      */
-    var color = Color.WHITE
+    var color = Color.WHITE.toMutableColor()
 
     private val transMat = Mat3()
     private val tempMat = Mat3()

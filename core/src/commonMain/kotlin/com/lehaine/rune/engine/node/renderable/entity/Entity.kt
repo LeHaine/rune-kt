@@ -4,6 +4,7 @@ import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
+import com.lehaine.littlekt.graphics.toFloatBits
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.radians
 import com.lehaine.littlekt.math.interpolate
@@ -134,7 +135,8 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
                 anchorY * it.originalHeight,
                 scaleX = entityScaleX * ppuInv,
                 scaleY = entityScaleY * ppuInv,
-                rotation = rotation
+                rotation = rotation,
+                colorBits = color.toFloatBits()
             )
         }
     }
