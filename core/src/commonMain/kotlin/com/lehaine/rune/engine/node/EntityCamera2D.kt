@@ -239,6 +239,7 @@ class EntityCamera2D : Node() {
         if (setImmediately) {
             entity ?: error("Target entity not set!!")
             camera?.position?.set(entity.px, entity.py, 0f)
+            clampedFocus.set(entity.px, entity.py)
         }
     }
 

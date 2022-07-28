@@ -83,7 +83,7 @@ class PixelExampleScene(context: Context) : RuneScene(context) {
                 entityCamera = entityCamera2D {
                     viewBounds.width = world.levels[0].pxWidth.toFloat()
                     viewBounds.height = world.levels[0].pxHeight.toFloat()
-                    follow(player)
+                    follow(player, true)
                     camera = canvasCamera
 
                     onUpdate += {
