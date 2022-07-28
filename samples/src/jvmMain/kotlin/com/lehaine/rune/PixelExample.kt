@@ -59,16 +59,16 @@ class PixelExampleScene(context: Context) : RuneScene(context) {
 
         canvasLayer {
             val entityCamera: EntityCamera2D
-
+            val player: Player
             val fbo = pixelSmoothFrameBuffer {
                 val level = ldtkLevel<String>(world.levels[0]) {
                     gridSize = 8
                 }
 
-                val player = player(level, 8f) {
+                player = player(level, 8f) {
                     slice = person
-                    cx = 3
-                    cy = 3
+                    cx = 20
+                    cy = 17
 
                     onUpdate += {
                         if (!cd.has("footstep")) {

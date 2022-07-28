@@ -63,7 +63,8 @@ class EntityCamera2D : Node() {
         set(value) {
             camera?.zoom = value
         }
-    val combinedZoom get() = camera?.zoom?.plus(bumpZoomFactor) ?: 0f
+    val combinedZoom get() = zoom + bumpZoomFactor
+    private var setImmediately = false
 
     private val trueViewBounds
         get() = _trueViewBounds.set(
@@ -89,12 +90,24 @@ class EntityCamera2D : Node() {
 
     override fun ready() {
         super.ready()
-        (parent as? PixelSmoothFrameBuffer)?.let {
-            it.onFboChanged.connect(this) { _ ->
-                offset.set(((it.width - it.pxWidth) / 2).toFloat(), ((it.height - it.pxHeight) / 2).toFloat())
-                    .scale(ppuInv)
+        (parent as? PixelSmoothFrameBuffer)?.let { frameBuffer ->
+            frameBuffer.onFboChanged.connect(this) { _ ->
+                calculateOffset(frameBuffer)
+
+                if (setImmediately) {
+                    following?.let {
+                        rawFocus.x = it.centerX
+                        rawFocus.y = it.centerY
+                    }
+                    setImmediately = false
+                }
             }
         }
+    }
+
+    private fun calculateOffset(fbo: PixelSmoothFrameBuffer) {
+        offset.set(((fbo.width - fbo.pxWidth) / 2).toFloat(), ((fbo.height - fbo.pxHeight) / 2).toFloat())
+            .scale(ppuInv)
     }
 
     override fun update(dt: Duration) {
@@ -131,15 +144,17 @@ class EntityCamera2D : Node() {
 
         val following = following
         if (following != null) {
-            val angle = atan2(following.centerY.floor() - rawFocus.y, following.centerX.floor() - rawFocus.x).radians
-            val distX = abs(following.centerX.floor() - rawFocus.x)
+            val tx = following.centerX.floor()
+            val ty = following.centerY.floor()
+            val angle = atan2(ty - rawFocus.y, tx - rawFocus.x).radians
+            val distX = abs(tx - rawFocus.x)
             if (distX >= deadZonePctX * width) {
-                val speedX = 0.015f / combinedZoom * trackingSpeed
+                val speedX = 0.015f * combinedZoom * trackingSpeed
                 dx += angle.cosine * (0.8f * distX - deadZonePctX * width) * speedX * tmod
             }
-            val distY = abs(following.centerY.floor() - rawFocus.y)
+            val distY = abs(ty - rawFocus.y)
             if (distY >= deadZonePctY * height) {
-                val speedY = 0.023f / combinedZoom * trackingSpeed
+                val speedY = 0.023f * combinedZoom * trackingSpeed
                 dy += angle.sine * (0.8f * distY - deadZonePctY * height) * speedY * tmod
             }
         }
@@ -238,8 +253,12 @@ class EntityCamera2D : Node() {
         following = entity
         if (setImmediately) {
             entity ?: error("Target entity not set!!")
-            camera?.position?.set(entity.px, entity.py, 0f)
-            clampedFocus.set(entity.px, entity.py)
+            if (scene != null) {
+                rawFocus.x = entity.centerX
+                rawFocus.y = entity.centerY
+            } else {
+                this.setImmediately = true
+            }
         }
     }
 

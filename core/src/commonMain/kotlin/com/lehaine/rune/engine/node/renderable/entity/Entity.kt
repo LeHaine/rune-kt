@@ -120,7 +120,12 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     init {
         anchorX = 0.5f
         anchorY = 1f
+
+        onReady += {
+            updateGridPosition()
+        }
     }
+
 
     override fun onPositionChanged() {
         super.onPositionChanged()
