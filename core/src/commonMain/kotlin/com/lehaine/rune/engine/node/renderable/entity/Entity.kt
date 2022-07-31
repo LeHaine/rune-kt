@@ -117,6 +117,8 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
 
     val dirToMouse: Int get() = dirTo(mouseX)
 
+    private var ignorePosChanged = false
+
     init {
         anchorX = 0.5f
         anchorY = 1f
@@ -129,7 +131,8 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
 
     override fun onPositionChanged() {
         super.onPositionChanged()
-        toPixelPosition(x, y)
+        if (ignorePosChanged) return
+        toPixelPosition(globalX, globalY)
     }
 
     override fun render(batch: Batch, camera: Camera) {
@@ -155,7 +158,9 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     }
 
     override fun postUpdate(dt: Duration) {
-        position(px, py, false)
+        ignorePosChanged = true
+        globalPosition(px, py)
+        ignorePosChanged = false
         entityScaleX = scaleX * dir * stretchX
         entityScaleY = scaleY * stretchY
         _stretchX += (1 - _stretchX) * min(1f, restoreSpeed * dt.seconds)
