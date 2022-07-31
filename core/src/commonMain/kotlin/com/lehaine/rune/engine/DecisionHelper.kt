@@ -9,9 +9,9 @@ internal data class DecisionElement<T>(val value: T) {
 }
 
 // https://github.com/deepnight/deepnightLibs/blob/master/src/dn/DecisionHelper.hx
-class DecisionHelper<T>(initialData: ArrayList<T>) {
+class DecisionHelper<T>(initialData: MutableList<T>) {
     @PublishedApi
-    internal val all = arrayListOf<DecisionElement<T>>().apply {
+    internal val all = mutableListOf<DecisionElement<T>>().apply {
         initialData.forEach {
             add(DecisionElement(it))
         }
