@@ -1,5 +1,6 @@
 package com.lehaine.rune.engine.node
 
+import com.lehaine.littlekt.graph.node.FrameBufferNode
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.node2d.Node2D
@@ -8,6 +9,7 @@ import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.graphics.shader.ShaderProgram
+import com.lehaine.littlekt.graphics.slice
 import com.lehaine.rune.engine.shader.PixelSmoothFragmentShader
 import com.lehaine.rune.engine.shader.PixelSmoothVertexShader
 import kotlin.contracts.ExperimentalContracts
@@ -28,12 +30,16 @@ fun Node.pixelPerfectSlice(
  */
 class PixelPerfectSlice : Node2D() {
 
-    var fbo: PixelSmoothFrameBuffer? = null
+    var fbo: FrameBufferNode? = null
         set(value) {
             field?.onFboChanged?.disconnect(this)
             field = value
             value?.onFboChanged?.connect(this) {
-                slice = TextureSlice(it, 0, (value.height - value.pxHeight), value.pxWidth, value.pxHeight)
+                slice = if (value is PixelSmoothFrameBuffer) {
+                    TextureSlice(it, 0, (value.height - value.pxHeight), value.pxWidth, value.pxHeight)
+                } else {
+                    it.slice()
+                }
             }
         }
 

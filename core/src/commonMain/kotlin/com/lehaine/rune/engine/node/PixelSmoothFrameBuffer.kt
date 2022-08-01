@@ -8,6 +8,7 @@ import com.lehaine.littlekt.math.nextPowerOfTwo
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.math.min
 import kotlin.time.Duration
 
 
@@ -29,6 +30,9 @@ class PixelSmoothFrameBuffer : FrameBufferNode() {
     var pxWidth = 0
     var pxHeight = 0
 
+    var maxWidth = 0
+    var maxHeight = 0
+
     /**
      * Mouse x-coordinate in world units.
      */
@@ -44,6 +48,13 @@ class PixelSmoothFrameBuffer : FrameBufferNode() {
     override fun resize(width: Int, height: Int) {
         pxHeight = height / (height / targetHeight)
         pxWidth = (width / (height / pxHeight))
+        if (maxWidth > 0) {
+            pxWidth = min(pxWidth, maxWidth)
+        }
+        if (maxHeight > 0) {
+            pxHeight = min(pxHeight, maxHeight)
+        }
+        println("$pxWidth,$pxHeight")
         resizeFbo(pxWidth.nextPowerOfTwo, pxHeight.nextPowerOfTwo)
         canvasCamera.ortho(this.width * ppuInv, this.height * ppuInv)
         canvasCamera.update()
