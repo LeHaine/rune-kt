@@ -54,7 +54,6 @@ class PixelSmoothFrameBuffer : FrameBufferNode() {
         if (maxHeight > 0) {
             pxHeight = min(pxHeight, maxHeight)
         }
-        println("$pxWidth,$pxHeight")
         resizeFbo(pxWidth.nextPowerOfTwo, pxHeight.nextPowerOfTwo)
         canvasCamera.ortho(this.width * ppuInv, this.height * ppuInv)
         canvasCamera.update()
