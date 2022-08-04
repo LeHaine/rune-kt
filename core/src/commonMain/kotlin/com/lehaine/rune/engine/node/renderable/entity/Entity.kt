@@ -100,10 +100,10 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     val attachY get() = ((cy + yr) * gridCellSize) * ppuInv
     val centerX get() = attachX + (0.5f - anchorX) * gridCellSize
     val centerY get() = attachY + (0.5f - anchorY) * gridCellSize
-    val top get() = attachY - anchorY * height
-    val right get() = attachX + (1 - anchorX) * width
-    val bottom get() = attachY + (1 - anchorY) * height
-    val left get() = attachX - anchorX * width
+    val top get() = attachY - anchorY * height * ppuInv
+    val right get() = attachX + (1 - anchorX) * width * ppuInv
+    val bottom get() = attachY + (1 - anchorY) * height * ppuInv
+    val left get() = attachX - anchorX * width * ppuInv
 
     val cooldown = Cooldown()
 
