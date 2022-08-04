@@ -42,8 +42,8 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
     var width: Float = gridCellSize
     var height: Float = gridCellSize
 
-    val innerRadius get() = min(width, height) * 0.5
-    val outerRadius get() = max(width, height) * 0.5
+    val innerRadius get() = min(width, height) * ppuInv * 0.5
+    val outerRadius get() = max(width, height) * ppuInv * 0.5
 
     var interpolatePixelPosition: Boolean = true
     var lastPx: Float = 0f
