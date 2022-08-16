@@ -33,7 +33,7 @@ class Cooldown {
         },
         gen = { CooldownTimer(0.milliseconds, "", {}) })
 
-    private val timersNameToIdxMap = mutableMapOf<String, Int>()
+    private val timersNameToTimerInstance = mutableMapOf<String, CooldownTimer>()
     private val timers = arrayListOf<CooldownTimer>()
 
     fun update(dt: Duration) {
@@ -41,28 +41,31 @@ class Cooldown {
             timer.update(dt)
             if (timer.finished) {
                 timers.remove(timer)
-                timersNameToIdxMap.remove(timer.name)
+                timersNameToTimerInstance.remove(timer.name)
                 cooldownTimerPool.free(timer)
             }
         }
     }
 
     private fun addTimer(name: String, timer: CooldownTimer) {
-        val idx = timersNameToIdxMap[name] ?: timers.size
+        timers -= timer
         timers += timer
-        timersNameToIdxMap[name] = idx
+        timersNameToTimerInstance[name] = timer
     }
 
     private fun removeTimer(name: String) {
-        val idx = timersNameToIdxMap[name] ?: return
-        timers.removeAt(idx).also {
-            cooldownTimerPool.free(it)
+        timersNameToTimerInstance[name] ?: return
+        timers.removeAll {
+            val remove = it.name == name
+            if (remove) {
+                cooldownTimerPool.free(it)
+            }
+            remove
         }
     }
 
     private fun reset(name: String, time: Duration, callback: () -> Unit) {
-        val idx = timersNameToIdxMap[name] ?: return
-        timers[idx].apply {
+        timersNameToTimerInstance[name]?.apply {
             this.time = time
             this.callback = callback
             this.elapsed = 0.milliseconds
@@ -86,12 +89,11 @@ class Cooldown {
     fun timeout(name: String, time: Duration, callback: () -> Unit = { }) =
         interval(name, time, callback)
 
-    fun has(name: String) = timersNameToIdxMap[name] != null
+    fun has(name: String) = timersNameToTimerInstance[name] != null
 
     fun remove(name: String) = removeTimer(name)
 
     fun ratio(name: String): Float {
-        val idx = timersNameToIdxMap[name] ?: return 0f
-        return timers[idx].ratio
+        return timersNameToTimerInstance[name]?.ratio ?: 0f
     }
 }
