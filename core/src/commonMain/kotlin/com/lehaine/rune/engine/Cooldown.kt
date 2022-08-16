@@ -1,6 +1,7 @@
 package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.util.datastructure.Pool
+import com.lehaine.littlekt.util.fastForEach
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -32,30 +33,36 @@ class Cooldown {
         },
         gen = { CooldownTimer(0.milliseconds, "", {}) })
 
-    private val timers = mutableMapOf<String, CooldownTimer>()
+    private val timersNameToIdxMap = mutableMapOf<String, Int>()
+    private val timers = arrayListOf<CooldownTimer>()
 
     fun update(dt: Duration) {
-        val iterate = timers.iterator()
-        while (iterate.hasNext()) {
-            val timer = iterate.next().value.also { it.update(dt) }
+        timers.fastForEach { timer ->
+            timer.update(dt)
             if (timer.finished) {
-                iterate.remove()
+                timers.remove(timer)
+                timersNameToIdxMap.remove(timer.name)
+                cooldownTimerPool.free(timer)
             }
         }
     }
 
     private fun addTimer(name: String, timer: CooldownTimer) {
-        timers[name] = timer
+        val idx = timersNameToIdxMap[name] ?: timers.size
+        timers += timer
+        timersNameToIdxMap[name] = idx
     }
 
     private fun removeTimer(name: String) {
-        timers.remove(name)?.also {
+        val idx = timersNameToIdxMap[name] ?: return
+        timers.removeAt(idx).also {
             cooldownTimerPool.free(it)
         }
     }
 
     private fun reset(name: String, time: Duration, callback: () -> Unit) {
-        timers[name]?.apply {
+        val idx = timersNameToIdxMap[name] ?: return
+        timers[idx].apply {
             this.time = time
             this.callback = callback
             this.elapsed = 0.milliseconds
@@ -79,11 +86,12 @@ class Cooldown {
     fun timeout(name: String, time: Duration, callback: () -> Unit = { }) =
         interval(name, time, callback)
 
-    fun has(name: String) = timers[name] != null
+    fun has(name: String) = timersNameToIdxMap[name] != null
 
     fun remove(name: String) = removeTimer(name)
 
     fun ratio(name: String): Float {
-        return timers[name]?.ratio ?: 0f
+        val idx = timersNameToIdxMap[name] ?: return 0f
+        return timers[idx].ratio
     }
 }
