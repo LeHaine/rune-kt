@@ -5,6 +5,7 @@ import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.toFloatBits
+import com.lehaine.littlekt.math.distSqr
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.radians
 import com.lehaine.littlekt.math.interpolate
@@ -193,8 +194,15 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
         return true
     }
 
-    fun isCollidingWithInnerCircle(from: Entity) = distPxTo(from) <= innerRadius
-    fun isCollidingWithOuterCircle(from: Entity) = distPxTo(from) <= outerRadius
+    fun isCollidingWithInnerCircle(from: Entity): Boolean {
+        val dist = innerRadius + from.innerRadius
+        return distSqr(px, py, from.px, from.py) <= dist * dist
+    }
+
+    fun isCollidingWithOuterCircle(from: Entity): Boolean {
+        val dist = outerRadius + from.outerRadius
+        return distSqr(px, py, from.px, from.py) <= dist * dist
+    }
 
     fun onPositionManuallyChanged() {
         lastPx = attachX
