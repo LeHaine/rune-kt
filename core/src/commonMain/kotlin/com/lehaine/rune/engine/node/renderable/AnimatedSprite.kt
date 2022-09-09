@@ -67,6 +67,12 @@ open class AnimatedSprite : Sprite() {
 
     fun removeAllStates() = player.removeAllStates()
 
+    fun resume() = player.resume()
+
+    fun start() = player.start()
+
+    fun restart() = player.restart()
+
     fun stop() = player.stop()
 
     private fun handleFrameChange(frame: Int) {
