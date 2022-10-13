@@ -4,6 +4,7 @@ import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
+import com.lehaine.littlekt.graphics.shape.ShapeRenderer
 import com.lehaine.littlekt.graphics.toFloatBits
 import com.lehaine.littlekt.math.distSqr
 import com.lehaine.littlekt.math.geom.Angle
@@ -136,7 +137,7 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
         toPixelPosition(globalX, globalY)
     }
 
-    override fun render(batch: Batch, camera: Camera) {
+    override fun render(batch: Batch, camera: Camera, shapeRenderer: ShapeRenderer) {
         slice?.let {
             batch.draw(
                 it, px, py,

@@ -4,6 +4,7 @@ import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
+import com.lehaine.littlekt.graphics.shape.ShapeRenderer
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkIntGridLayer
 import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkLevel
 import com.lehaine.littlekt.math.clamp
@@ -81,7 +82,7 @@ open class LDtkGameLevelRenderable<LevelMark>(var level: LDtkLevel) : Renderable
     // set level marks at start of level creation to react to certain tiles
     protected open fun createLevelMarks() = Unit
 
-    override fun render(batch: Batch, camera: Camera) {
+    override fun render(batch: Batch, camera: Camera, shapeRenderer: ShapeRenderer) {
         level.render(batch, camera, globalX, globalY, (globalScaleY / globalScaleY * globalScaleX) * ppuInv)
     }
 

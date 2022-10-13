@@ -9,6 +9,7 @@ import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.TextureSlice
 import com.lehaine.littlekt.graphics.shader.ShaderProgram
+import com.lehaine.littlekt.graphics.shape.ShapeRenderer
 import com.lehaine.littlekt.graphics.slice
 import com.lehaine.rune.engine.shader.PixelSmoothFragmentShader
 import com.lehaine.rune.engine.shader.PixelSmoothVertexShader
@@ -59,7 +60,7 @@ class PixelPerfectSlice : Node2D() {
         smoothCameraShader.prepare(context)
     }
 
-    override fun render(batch: Batch, camera: Camera) {
+    override fun render(batch: Batch, camera: Camera, shapeRenderer: ShapeRenderer) {
         slice?.let {
             smoothCameraShader.vertexShader.uTextureSizes.apply(
                 smoothCameraShader,

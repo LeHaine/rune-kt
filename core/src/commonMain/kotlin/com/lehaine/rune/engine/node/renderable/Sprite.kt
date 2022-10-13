@@ -5,6 +5,7 @@ import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.TextureSlice
+import com.lehaine.littlekt.graphics.shape.ShapeRenderer
 import com.lehaine.littlekt.graphics.toFloatBits
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -49,7 +50,7 @@ open class Sprite : Renderable2D() {
 
     var slice: TextureSlice? = null
 
-    override fun render(batch: Batch, camera: Camera) {
+    override fun render(batch: Batch, camera: Camera, shapeRenderer: ShapeRenderer) {
         slice?.let {
             batch.draw(
                 it,

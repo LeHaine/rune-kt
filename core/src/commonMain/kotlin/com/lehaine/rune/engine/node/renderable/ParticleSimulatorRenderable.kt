@@ -7,6 +7,7 @@ import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.ParticleSimulator
 import com.lehaine.littlekt.graphics.TextureSlice
+import com.lehaine.littlekt.graphics.shape.ShapeRenderer
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
 import com.lehaine.littlekt.util.fastForEach
@@ -31,7 +32,7 @@ class ParticleSimulatorRenderable : Node2D() {
 
     fun alloc(slice: TextureSlice, x: Float, y: Float) = simulator.alloc(slice, x, y)
 
-    override fun render(batch: Batch, camera: Camera) {
+    override fun render(batch: Batch, camera: Camera, shapeRenderer: ShapeRenderer) {
         viewBounds.calculateViewBounds(camera)
         simulator.particles.fastForEach {
             if (!it.visible || !it.alive) return@fastForEach
