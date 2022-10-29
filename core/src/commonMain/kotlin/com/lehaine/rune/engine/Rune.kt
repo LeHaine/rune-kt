@@ -2,6 +2,9 @@ package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.ContextListener
+import com.lehaine.littlekt.async.KtScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /**
  * @author Colton Daily
@@ -38,6 +41,8 @@ open class Rune(context: Context) : ContextListener(context) {
     private var initialize = false
 
     private var nextScene: RuneScene? = null
+    private var initialSceneJob: Job? = null
+    private var sceneChangeJob: Job? = null
 
     final override suspend fun Context.start() {
         create()
@@ -48,28 +53,38 @@ open class Rune(context: Context) : ContextListener(context) {
         onRender { dt ->
             scene?.let { _scene ->
 
-                if (initialize) {
-                    _scene.initialize()
-                    _scene.resize(context.graphics.width, context.graphics.height)
+                if (initialize && initialSceneJob?.isActive != true) {
+                    initialSceneJob = KtScope.launch {
+                        _scene.initialize()
+                        _scene.resize(context.graphics.width, context.graphics.height)
 
-                    initialize = false
+                        initialize = false
+                    }
                 }
 
-                _scene.update(dt)
+                if (initialSceneJob?.isActive != true) {
+                    _scene.update(dt)
+                }
 
                 nextScene?.let { _nextScene ->
-                    _scene.dispose()
-                    this@Rune._scene = _nextScene
-                    nextScene = null
-                    _nextScene.apply {
-                        rune = this@Rune
+                    if (sceneChangeJob?.isActive != true) {
+                        sceneChangeJob = KtScope.launch {
+                            _scene.dispose()
+                            this@Rune._scene = _nextScene
+                            nextScene = null
+                            _nextScene.apply {
+                                rune = this@Rune
+                            }
+                            onSceneChanged()
+                            _nextScene.initialize()
+                            _nextScene.resize(context.graphics.width, context.graphics.height)
+                        }
                     }
-                    onSceneChanged()
-                    _nextScene.initialize()
-                    _nextScene.resize(context.graphics.width, context.graphics.height)
                 }
             }
-            scene?.render()
+            if (sceneChangeJob?.isActive != true && initialSceneJob?.isActive != true) {
+                scene?.render()
+            }
         }
     }
 
