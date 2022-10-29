@@ -1,6 +1,7 @@
 package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.graph.node.Node
+import com.lehaine.littlekt.util.fastForEach
 import kotlin.time.Duration
 
 
@@ -18,6 +19,7 @@ open class ActionCreator(
     var time: Duration = Duration.ZERO,
     var signal: String? = null,
     val executeUntil: () -> Boolean = { true },
+    var parallel: Boolean = false,
     val init: ActionCreator.() -> Unit = {},
 ) {
 
@@ -38,27 +40,39 @@ open class ActionCreator(
             executed = true
         }
 
-        while (nodes.isNotEmpty()) {
-            val node = nodes.first()
-            if (!node.executed && node.time <= Duration.ZERO) {
-                val signal = node.signal
-                if (signal == null || signals[signal] == true) {
-                    node.execute(dt)
-                    node.executed = true
-                    node.signal = null
-                }
+        if (parallel) {
+            nodes.fastForEach {
+                handleNode(dt, it)
             }
-            if (node.isDoneExecuting() && node.nodes.isEmpty()) {
-                nodes.removeFirst()
-            } else {
-                if(node.isDoneExecuting() && node.nodes.isNotEmpty()) {
-                    node.execute(dt)
-                }
-                if (node.time > Duration.ZERO) {
-                    node.time -= dt
-                }
-                break
+        } else {
+            while (nodes.isNotEmpty()) {
+                val node = nodes.first()
+                val continueNext = handleNode(dt, node)
+                if (!continueNext) break
             }
+        }
+    }
+
+    private fun handleNode(dt: Duration, node: ActionCreator): Boolean {
+        if (!node.executed && node.time <= Duration.ZERO) {
+            val signal = node.signal
+            if (signal == null || signals[signal] == true) {
+                node.execute(dt)
+                node.executed = true
+                node.signal = null
+            }
+        }
+        return if (node.isDoneExecuting() && node.nodes.isEmpty()) {
+            nodes.removeFirst()
+            true
+        } else {
+            if (node.isDoneExecuting() && node.nodes.isNotEmpty()) {
+                node.execute(dt)
+            }
+            if (node.time > Duration.ZERO) {
+                node.time -= dt
+            }
+            parallel
         }
     }
 
@@ -98,10 +112,18 @@ open class ActionCreator(
         time: Duration = Duration.ZERO,
         untilSignal: String? = null,
         untilCondition: () -> Boolean = { true },
+        parallel: Boolean = false,
         init: @ActionCreatorDslMarker ActionCreator.() -> Unit = {}
     ) {
-        ActionCreator(time, untilSignal, untilCondition, init).also { nodes += it }
+        ActionCreator(time, untilSignal, untilCondition, parallel, init).also { nodes += it }
     }
+
+    fun parallel(
+        time: Duration = Duration.ZERO,
+        untilSignal: String? = null,
+        untilCondition: () -> Boolean = { true },
+        init: @ActionCreatorDslMarker ActionCreator.() -> Unit = {}
+    ) = action(time, untilSignal, untilCondition, true, init)
 
     override fun toString(): String {
         return "ActionCreator(id=$id, time=$time, signal=$signal, executed=$executed, signals=$signals, nodes=$nodes)"

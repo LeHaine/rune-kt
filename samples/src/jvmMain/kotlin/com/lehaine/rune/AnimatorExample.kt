@@ -71,16 +71,18 @@ class AnimatorExampleScene(context: Context) : RuneScene(context) {
             waitFor({ player.x == 8f && player.y == 8f })
             action {
                 player.say("I have arrived")
-                wait(1.seconds) {
-                    player2.move(15, 10)
-                    player2.say("Get away!!")
+                parallel {
+                    wait(1.seconds) {
+                        player2.move(15, 10)
+                        player2.say("Get away!!")
+                    }
+                    wait(2.seconds) {
+                        player.laugh()
+                    }
+                    wait(3.seconds) {
+                        player.move(3,3)
+                    }
                 }
-            }
-            wait(2.seconds) {
-                player.laugh()
-            }
-            wait(3.seconds) {
-                player.move(3,3)
             }
             waitFor({ player.x == 3f && player.y == 3f }) {
                 player.say("I am back")
