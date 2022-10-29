@@ -1,7 +1,6 @@
 package com.lehaine.rune.engine
 
 import com.lehaine.littlekt.graph.node.Node
-import kotlin.reflect.KFunction
 import kotlin.time.Duration
 
 
@@ -9,36 +8,30 @@ import kotlin.time.Duration
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
 annotation class ActionCreatorDslMarker
 
-interface BaseActionNode {
-    var time: Duration
-    var executed: Boolean
-    var signal: String?
-    val executeUntil: () -> Boolean
-    fun execute(dt: Duration)
-    fun isDoneExecuting() = executed && executeUntil() && time <= Duration.ZERO && signal == null
-}
 
 /**
+ * An action creator to create cutscenes with sequential actions.
  * @author Colton Daily
  * @date 7/20/2021
  */
 open class ActionCreator(
-    val init: ActionCreator.() -> Unit = {}
-) : BaseActionNode {
+    var time: Duration = Duration.ZERO,
+    var signal: String? = null,
+    val executeUntil: () -> Boolean = { true },
+    val init: ActionCreator.() -> Unit = {},
+) {
 
+    private var id = genId++
     private var initialized = false
 
+    var executed: Boolean = false
+
     @PublishedApi
-    internal val nodes = ArrayDeque<BaseActionNode>()
+    internal val nodes = ArrayDeque<ActionCreator>()
 
     private val signals = mutableMapOf<String, Boolean>()
 
-    override var time: Duration = Duration.ZERO
-    override var executed: Boolean = false
-    override var signal: String? = null
-    override val executeUntil: () -> Boolean = { nodes.isEmpty() }
-
-    override fun execute(dt: Duration) {
+    fun execute(dt: Duration) {
         if (!initialized) {
             init(this)
             initialized = true
@@ -55,9 +48,12 @@ open class ActionCreator(
                     node.signal = null
                 }
             }
-            if (node.isDoneExecuting()) {
+            if (node.isDoneExecuting() && node.nodes.isEmpty()) {
                 nodes.removeFirst()
             } else {
+                if(node.isDoneExecuting() && node.nodes.isNotEmpty()) {
+                    node.execute(dt)
+                }
                 if (node.time > Duration.ZERO) {
                     node.time -= dt
                 }
@@ -66,33 +62,32 @@ open class ActionCreator(
         }
     }
 
-    /**
-     *
-     */
-    fun waitFor(condition: () -> Boolean, callback: () -> Unit = {}) {
-        action(untilCondition = condition, callback = callback)
+    private fun isDoneExecuting() = executed && executeUntil() && time <= Duration.ZERO && signal == null
+
+    fun waitFor(condition: () -> Boolean, init: @ActionCreatorDslMarker ActionCreator.() -> Unit = {}) {
+        action(untilCondition = condition, init = init)
     }
 
     fun waitFor(
         signal: String,
-        callback: () -> Unit = {}
+        init: ActionCreator.() -> Unit = {}
     ) {
         action(untilSignal = signal) {
             signals.remove(signal)
-            callback()
+            init()
         }
     }
 
     fun waitForSignal(
-        callback: () -> Unit = {}
-    ) = waitFor("", callback)
+        init: @ActionCreatorDslMarker ActionCreator.() -> Unit = {}
+    ) = waitFor("", init)
 
 
     fun wait(
         time: Duration,
-        callback: () -> Unit = {}
+        init: @ActionCreatorDslMarker ActionCreator.() -> Unit = {}
     ) {
-        action(time = time, callback = callback)
+        action(time = time, init = init)
     }
 
     fun signal(signal: String = "") {
@@ -100,20 +95,21 @@ open class ActionCreator(
     }
 
     fun action(
-        untilCondition: () -> Boolean = { true },
-        untilSignal: String? = null,
         time: Duration = Duration.ZERO,
-        callback: () -> Unit = {}
+        untilSignal: String? = null,
+        untilCondition: () -> Boolean = { true },
+        init: @ActionCreatorDslMarker ActionCreator.() -> Unit = {}
     ) {
-        nodes.add(object : BaseActionNode {
-            override var time: Duration = time
-            override var signal: String? = untilSignal
-            override var executed: Boolean = false
-            override val executeUntil = untilCondition
-            override fun execute(dt: Duration) = callback()
-        })
+        ActionCreator(time, untilSignal, untilCondition, init).also { nodes += it }
     }
 
+    override fun toString(): String {
+        return "ActionCreator(id=$id, time=$time, signal=$signal, executed=$executed, signals=$signals, nodes=$nodes)"
+    }
+
+    companion object {
+        private var genId = 0
+    }
 }
 
 fun Node.actionCreator(
