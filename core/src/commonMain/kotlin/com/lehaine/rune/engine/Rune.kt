@@ -55,6 +55,7 @@ open class Rune(context: Context) : ContextListener(context) {
 
                 if (initialize && initialSceneJob?.isActive != true) {
                     initialSceneJob = KtScope.launch {
+                        sceneChangeJob?.join()
                         _scene.initialize()
                         _scene.resize(context.graphics.width, context.graphics.height)
 
@@ -62,13 +63,14 @@ open class Rune(context: Context) : ContextListener(context) {
                     }
                 }
 
-                if (initialSceneJob?.isActive != true) {
+                if (sceneChangeJob?.isActive != true && initialSceneJob?.isActive != true) {
                     _scene.update(dt)
                 }
 
                 nextScene?.let { _nextScene ->
                     if (sceneChangeJob?.isActive != true) {
                         sceneChangeJob = KtScope.launch {
+                            initialSceneJob?.join()
                             _scene.dispose()
                             this@Rune._scene = _nextScene
                             nextScene = null
