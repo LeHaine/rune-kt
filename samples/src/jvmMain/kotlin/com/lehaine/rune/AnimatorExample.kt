@@ -14,10 +14,7 @@ import com.lehaine.littlekt.graphics.slice
 import com.lehaine.littlekt.math.isFuzzyEqual
 import com.lehaine.littlekt.util.seconds
 import com.lehaine.littlekt.util.viewport.ExtendViewport
-import com.lehaine.rune.engine.ActionCreator
-import com.lehaine.rune.engine.Rune
-import com.lehaine.rune.engine.RuneScene
-import com.lehaine.rune.engine.actionCreator
+import com.lehaine.rune.engine.*
 import com.lehaine.rune.engine.node.renderable.Sprite
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -36,7 +33,7 @@ class AnimatorExample(context: Context) : Rune(context) {
     }
 }
 
-class AnimatorExampleScene(context: Context) : RuneScene(context) {
+class AnimatorExampleScene(context: Context) : RuneSceneDefault(context) {
 
     override var ppu: Float = 8f
     private val player = Player()

@@ -21,6 +21,7 @@ import com.lehaine.littlekt.util.viewport.FitViewport
 import com.lehaine.rune.engine.GameLevel
 import com.lehaine.rune.engine.Rune
 import com.lehaine.rune.engine.RuneScene
+import com.lehaine.rune.engine.RuneSceneDefault
 import com.lehaine.rune.engine.node.EntityCamera2D
 import com.lehaine.rune.engine.node.entityCamera2D
 import com.lehaine.rune.engine.node.pixelPerfectSlice
@@ -47,7 +48,7 @@ class ViewportsExample(context: Context) : Rune(context) {
     }
 }
 
-class ViewportsExampleScene(context: Context) : RuneScene(context) {
+class ViewportsExampleScene(context: Context) : RuneSceneDefault(context) {
 
     override var ppu: Float = 8f
     private val particleSimulator = ParticleSimulator(2048)

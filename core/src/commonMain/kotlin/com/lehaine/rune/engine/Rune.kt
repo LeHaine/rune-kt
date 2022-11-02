@@ -15,13 +15,13 @@ open class Rune(context: Context) : ContextListener(context) {
     /**
      * The internally handled scene
      */
-    private var _scene: RuneScene? = null
+    private var _scene: RuneScene<*>? = null
 
     /**
      * The currently active [RuneScene].
-     * Note: if set, the [RuneScene] will not actually change until the end of the [render]
+     * Note: if set, the [RuneScene] will not actually change until the end of the [Context.onRender]
      */
-    var scene: RuneScene?
+    var scene: RuneScene<*>?
         get() = _scene
         set(value) {
             check(value != null) { "Scene can not be set to null!" }
@@ -40,7 +40,7 @@ open class Rune(context: Context) : ContextListener(context) {
 
     private var initialize = false
 
-    private var nextScene: RuneScene? = null
+    private var nextScene: RuneScene<*>? = null
     private var initialSceneJob: Job? = null
     private var sceneChangeJob: Job? = null
 

@@ -17,6 +17,7 @@ import com.lehaine.littlekt.util.seconds
 import com.lehaine.rune.engine.GameLevel
 import com.lehaine.rune.engine.Rune
 import com.lehaine.rune.engine.RuneScene
+import com.lehaine.rune.engine.RuneSceneDefault
 import com.lehaine.rune.engine.node.EntityCamera2D
 import com.lehaine.rune.engine.node.entityCamera2D
 import com.lehaine.rune.engine.node.pixelPerfectSlice
@@ -43,7 +44,7 @@ class PixelExample(context: Context) : Rune(context) {
     }
 }
 
-class PixelExampleScene(context: Context) : RuneScene(context) {
+class PixelExampleScene(context: Context) : RuneSceneDefault(context) {
 
     override var ppu: Float = 8f
     private val particleSimulator = ParticleSimulator(2048)
