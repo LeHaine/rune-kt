@@ -11,28 +11,17 @@ import com.lehaine.littlekt.util.viewport.Viewport
 /**
  * @author Colton Daily
  */
-open class RuneScene(
+open class RuneScene<T>(
     context: Context,
     viewport: Viewport = ScreenViewport(
         context.graphics.width,
         context.graphics.height
-    )
-) : SceneGraph<String>(
+    ),
+    uiInputSignals: UiInputSignals<T>,
+) : SceneGraph<T>(
     context,
     viewport,
-    uiInputSignals = UiInputSignals(
-        "ui_accept",
-        "ui_select",
-        "ui_cancel",
-        "ui_focus_next",
-        "ui_focus_prev",
-        "ui_left",
-        "ui_right",
-        "ui_up",
-        "ui_down",
-        "ui_home",
-        "ui_end"
-    )
+    uiInputSignals = uiInputSignals
 ) {
 
     val graphics get() = context.graphics
@@ -60,9 +49,30 @@ open class RuneScene(
         super.render()
     }
 
-    fun changeTo(scene: RuneScene) {
+    fun changeTo(scene: RuneScene<*>) {
         val rune = rune
         check(rune != null) { "This scenes `Rune` property is null. This is most likely because the scene isn't set!" }
         rune.scene = scene
     }
 }
+
+/**
+ * A [RuneScene] String default implementation for input.
+ */
+open class RuneSceneDefault(
+    context: Context,
+    viewport: Viewport = ScreenViewport(context.graphics.width, context.graphics.height),
+    uiInputSignals: UiInputSignals<String> = UiInputSignals(
+        "ui_accept",
+        "ui_select",
+        "ui_cancel",
+        "ui_focus_next",
+        "ui_focus_prev",
+        "ui_left",
+        "ui_right",
+        "ui_up",
+        "ui_down",
+        "ui_home",
+        "ui_end"
+    )
+) : RuneScene<String>(context, viewport, uiInputSignals)
