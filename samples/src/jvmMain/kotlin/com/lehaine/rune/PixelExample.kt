@@ -16,7 +16,6 @@ import com.lehaine.littlekt.math.random
 import com.lehaine.littlekt.util.seconds
 import com.lehaine.rune.engine.GameLevel
 import com.lehaine.rune.engine.Rune
-import com.lehaine.rune.engine.RuneScene
 import com.lehaine.rune.engine.RuneSceneDefault
 import com.lehaine.rune.engine.node.EntityCamera2D
 import com.lehaine.rune.engine.node.entityCamera2D
@@ -67,7 +66,7 @@ class PixelExampleScene(context: Context) : RuneSceneDefault(context) {
                 }
 
                 player = player(level, 8f) {
-                    slice = person
+                    sprite.slice = person
                     cx = 20
                     cy = 17
 
@@ -160,18 +159,23 @@ class PixelExampleScene(context: Context) : RuneSceneDefault(context) {
             super.update(dt)
             xDir = 0
             yDir = 0
-            if (input.isKeyPressed(Key.W)) {
+            if (context.input.isKeyPressed(Key.W)) {
                 yDir = -1
             }
-            if (input.isKeyPressed(Key.S)) {
+            if (context.input.isKeyPressed(Key.S)) {
                 yDir = 1
             }
-            if (input.isKeyPressed(Key.D)) {
+            if (context.input.isKeyPressed(Key.D)) {
                 xDir = 1
             }
-            if (input.isKeyPressed(Key.A)) {
+            if (context.input.isKeyPressed(Key.A)) {
                 xDir = -1
             }
+            if(context.input.isKeyJustPressed(Key.ENTER)) {
+                stretchX = 2f
+            }
+
+            dir = if(xDir != 0) xDir else dir
         }
 
         override fun fixedUpdate() {

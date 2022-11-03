@@ -74,7 +74,7 @@ class ViewportsExampleScene(context: Context) : RuneSceneDefault(context) {
                 }
 
                 player = player(level, 8f) {
-                    slice = person
+                    sprite.slice = person
                     cx = 20
                     cy = 17
 
@@ -170,16 +170,16 @@ class ViewportsExampleScene(context: Context) : RuneSceneDefault(context) {
             super.update(dt)
             xDir = 0
             yDir = 0
-            if (input.isKeyPressed(Key.W)) {
+            if (context.input.isKeyPressed(Key.W)) {
                 yDir = -1
             }
-            if (input.isKeyPressed(Key.S)) {
+            if (context.input.isKeyPressed(Key.S)) {
                 yDir = 1
             }
-            if (input.isKeyPressed(Key.D)) {
+            if (context.input.isKeyPressed(Key.D)) {
                 xDir = 1
             }
-            if (input.isKeyPressed(Key.A)) {
+            if (context.input.isKeyPressed(Key.A)) {
                 xDir = -1
             }
         }

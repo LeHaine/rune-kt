@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node.renderable.entity
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.shape.ShapeRenderer
@@ -13,7 +14,7 @@ import com.lehaine.littlekt.math.interpolate
 import com.lehaine.littlekt.util.seconds
 import com.lehaine.rune.engine.Cooldown
 import com.lehaine.rune.engine.node.PixelSmoothFrameBuffer
-import com.lehaine.rune.engine.node.renderable.AnimatedSprite
+import com.lehaine.rune.engine.node.renderable.animatedSprite
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -26,7 +27,12 @@ fun Node.entity(gridCellSize: Float, callback: Entity.() -> Unit = {}): Entity {
     return Entity(gridCellSize).also(callback).addTo(this)
 }
 
-open class Entity(val gridCellSize: Float) : AnimatedSprite() {
+open class Entity(val gridCellSize: Float) : Node2D() {
+    val sprite = animatedSprite()
+
+    var anchorX: Float by sprite::anchorX
+    var anchorY: Float by sprite::anchorY
+
     var cx: Int = 0
     var cy: Int = 0
     var xr: Float = 0.5f
@@ -109,6 +115,7 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
 
     val cooldown = Cooldown()
 
+
     val mouseX get() = (canvas as? PixelSmoothFrameBuffer)?.mouseX ?: 0f
     val mouseY get() = (canvas as? PixelSmoothFrameBuffer)?.mouseY ?: 0f
     val angleToMouse: Angle
@@ -137,20 +144,6 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
         toPixelPosition(globalX, globalY)
     }
 
-    override fun render(batch: Batch, camera: Camera, shapeRenderer: ShapeRenderer) {
-        slice?.let {
-            batch.draw(
-                it, px, py,
-                anchorX * it.originalWidth,
-                anchorY * it.originalHeight,
-                scaleX = entityScaleX * ppuInv,
-                scaleY = entityScaleY * ppuInv,
-                rotation = rotation,
-                colorBits = color.toFloatBits()
-            )
-        }
-    }
-
     override fun preUpdate(dt: Duration) {
         cd.update(dt)
     }
@@ -167,6 +160,8 @@ open class Entity(val gridCellSize: Float) : AnimatedSprite() {
         entityScaleY = scaleY * stretchY
         _stretchX += (1 - _stretchX) * min(1f, restoreSpeed * dt.seconds)
         _stretchY += (1 - _stretchY) * min(1f, restoreSpeed * dt.seconds)
+        sprite.scaleX = entityScaleX
+        sprite.scaleY = entityScaleY
     }
 
 
