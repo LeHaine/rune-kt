@@ -3,10 +3,7 @@ package com.lehaine.rune.engine.node.renderable.entity
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.node2d.Node2D
-import com.lehaine.littlekt.graphics.Batch
-import com.lehaine.littlekt.graphics.Camera
-import com.lehaine.littlekt.graphics.shape.ShapeRenderer
-import com.lehaine.littlekt.graphics.toFloatBits
+import com.lehaine.littlekt.graphics.*
 import com.lehaine.littlekt.math.distSqr
 import com.lehaine.littlekt.math.geom.Angle
 import com.lehaine.littlekt.math.geom.radians
@@ -28,7 +25,9 @@ fun Node.entity(gridCellSize: Float, callback: Entity.() -> Unit = {}): Entity {
 }
 
 open class Entity(val gridCellSize: Float) : Node2D() {
-    val sprite = animatedSprite()
+    val sprite = animatedSprite {
+        name = "Skin"
+    }
 
     var anchorX: Float by sprite::anchorX
     var anchorY: Float by sprite::anchorY
@@ -136,7 +135,6 @@ open class Entity(val gridCellSize: Float) : Node2D() {
             updateGridPosition()
         }
     }
-
 
     override fun onPositionChanged() {
         super.onPositionChanged()
