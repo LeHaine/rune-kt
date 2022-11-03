@@ -3,6 +3,7 @@ package com.lehaine.rune.engine.node
 import com.lehaine.littlekt.graph.node.FrameBufferNode
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.nextPowerOfTwo
 import kotlin.contracts.ExperimentalContracts
@@ -14,7 +15,7 @@ import kotlin.time.Duration
 
 @OptIn(ExperimentalContracts::class)
 fun Node.pixelSmoothFrameBuffer(
-    callback: PixelSmoothFrameBuffer.() -> Unit = {}
+    callback: @SceneGraphDslMarker PixelSmoothFrameBuffer.() -> Unit = {}
 ): PixelSmoothFrameBuffer {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return PixelSmoothFrameBuffer().also(callback).addTo(this)

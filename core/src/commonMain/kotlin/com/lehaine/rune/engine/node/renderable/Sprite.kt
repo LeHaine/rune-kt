@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node.renderable
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.TextureSlice
@@ -14,7 +15,7 @@ import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
 fun Node.sprite(
-    callback: Sprite.() -> Unit = {}
+    callback: @SceneGraphDslMarker Sprite.() -> Unit = {}
 ): Sprite {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return Sprite().also(callback).addTo(this)

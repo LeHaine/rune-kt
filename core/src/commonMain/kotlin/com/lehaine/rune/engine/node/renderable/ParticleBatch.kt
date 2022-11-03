@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node.renderable
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
@@ -18,7 +19,7 @@ import kotlin.time.Duration
 
 @OptIn(ExperimentalContracts::class)
 fun Node.particleBatch(
-    callback: ParticleBatch.() -> Unit = {}
+    callback: @SceneGraphDslMarker ParticleBatch.() -> Unit = {}
 ): ParticleBatch {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return ParticleBatch().also(callback).addTo(this)

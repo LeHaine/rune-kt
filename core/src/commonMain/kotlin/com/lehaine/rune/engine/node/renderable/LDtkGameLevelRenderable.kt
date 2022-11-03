@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node.renderable
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.shape.ShapeRenderer
@@ -17,7 +18,7 @@ import kotlin.contracts.contract
 @OptIn(ExperimentalContracts::class)
 fun <LevelMark> Node.ldtkLevel(
     level: LDtkLevel,
-    callback: LDtkGameLevelRenderable<LevelMark>.() -> Unit = {}
+    callback: @SceneGraphDslMarker LDtkGameLevelRenderable<LevelMark>.() -> Unit = {}
 ): LDtkGameLevelRenderable<LevelMark> {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return LDtkGameLevelRenderable<LevelMark>(level).also(callback).addTo(this)

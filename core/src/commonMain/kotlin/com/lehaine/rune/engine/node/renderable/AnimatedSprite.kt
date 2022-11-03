@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node.renderable
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graphics.Animation
 import com.lehaine.littlekt.graphics.AnimationPlayer
 import com.lehaine.littlekt.graphics.TextureSlice
@@ -15,7 +16,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalContracts::class)
 fun Node.animatedSprite(
-    callback: AnimatedSprite.() -> Unit = {}
+    callback: @SceneGraphDslMarker AnimatedSprite.() -> Unit = {}
 ): AnimatedSprite {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return AnimatedSprite().also(callback).addTo(this)

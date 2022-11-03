@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graphics.OrthographicCamera
 import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.Rect
@@ -21,7 +22,7 @@ import kotlin.time.Duration
 
 @OptIn(ExperimentalContracts::class)
 fun Node.entityCamera2D(
-    callback: EntityCamera2D.() -> Unit = {}
+    callback: @SceneGraphDslMarker EntityCamera2D.() -> Unit = {}
 ): EntityCamera2D {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return EntityCamera2D().also(callback).addTo(this)

@@ -3,6 +3,7 @@ package com.lehaine.rune.engine.node
 import com.lehaine.littlekt.graph.node.FrameBufferNode
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graph.node.render.Material
 import com.lehaine.littlekt.graphics.Batch
@@ -19,7 +20,7 @@ import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
 fun Node.pixelPerfectSlice(
-    callback: PixelPerfectSlice.() -> Unit = {}
+    callback: @SceneGraphDslMarker PixelPerfectSlice.() -> Unit = {}
 ): PixelPerfectSlice {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return PixelPerfectSlice().also(callback).addTo(this)

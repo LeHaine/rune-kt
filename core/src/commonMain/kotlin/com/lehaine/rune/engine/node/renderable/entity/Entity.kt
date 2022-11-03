@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node.renderable.entity
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graphics.*
 import com.lehaine.littlekt.math.distSqr
@@ -19,7 +20,7 @@ import kotlin.math.*
 import kotlin.time.Duration
 
 @OptIn(ExperimentalContracts::class)
-fun Node.entity(gridCellSize: Float, callback: Entity.() -> Unit = {}): Entity {
+fun Node.entity(gridCellSize: Float, callback: @SceneGraphDslMarker Entity.() -> Unit = {}): Entity {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return Entity(gridCellSize).also(callback).addTo(this)
 }

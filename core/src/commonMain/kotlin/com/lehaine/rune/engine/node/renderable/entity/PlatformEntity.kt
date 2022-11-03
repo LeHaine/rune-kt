@@ -2,6 +2,7 @@ package com.lehaine.rune.engine.node.renderable.entity
 
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
+import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.rune.engine.GameLevel
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -11,7 +12,7 @@ import kotlin.contracts.contract
 fun Node.platformEntity(
     level: GameLevel<*>,
     gridCellSize: Float,
-    callback: PlatformEntity.() -> Unit = {}
+    callback: @SceneGraphDslMarker PlatformEntity.() -> Unit = {}
 ): PlatformEntity {
     contract { callsInPlace(callback, InvocationKind.EXACTLY_ONCE) }
     return PlatformEntity(level, gridCellSize).also(callback).addTo(this)
