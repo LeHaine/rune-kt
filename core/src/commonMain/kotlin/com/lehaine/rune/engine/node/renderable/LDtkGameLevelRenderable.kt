@@ -33,28 +33,21 @@ open class LDtkGameLevelRenderable<LevelMark>(var level: LDtkLevel) : Renderable
     override val renderHeight: Float
         get() = level.pxHeight.toFloat()
 
-    var worldScale = 1f
-        set(value) {
-            field = value
-            scaleX = value
-            scaleY = value
-        }
-
     val levelWidth get() = level.layers[0].gridWidth
     val levelHeight get() = level.layers[0].gridHeight
 
     protected val marks = mutableMapOf<LevelMark, MutableMap<Int, Int>>()
 
-    // a list of collision layers indices from LDtk world
-    protected val collisionLayers = intArrayOf(1)
-    protected val collisionLayer = level["Collisions"] as LDtkIntGridLayer
+    // a list of collision int values from LDtk world
+    protected open val collisionValues = intArrayOf(1)
+    protected open val collisionLayer = level["Collisions"] as LDtkIntGridLayer
 
     override fun isValid(cx: Int, cy: Int) = collisionLayer.isCoordValid(cx, cy)
     override fun getCoordId(cx: Int, cy: Int) = collisionLayer.getCoordId(cx, cy)
 
     override fun hasCollision(cx: Int, cy: Int): Boolean {
         return if (isValid(cx, cy)) {
-            collisionLayers.contains(collisionLayer.getInt(cx, cy))
+            collisionValues.contains(collisionLayer.getInt(cx, cy))
         } else {
             true
         }
@@ -82,6 +75,11 @@ open class LDtkGameLevelRenderable<LevelMark>(var level: LDtkLevel) : Renderable
 
     // set level marks at start of level creation to react to certain tiles
     protected open fun createLevelMarks() = Unit
+
+    fun setWorldScale(scale: Float) {
+        scaleX = scale
+        scaleY = scale
+    }
 
     override fun render(batch: Batch, camera: Camera, shapeRenderer: ShapeRenderer) {
         level.render(batch, camera, globalX, globalY, (globalScaleY / globalScaleY * globalScaleX) * ppuInv)
