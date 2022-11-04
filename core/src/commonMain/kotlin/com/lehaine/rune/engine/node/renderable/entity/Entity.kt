@@ -29,9 +29,16 @@ open class Entity(val gridCellSize: Float) : Node2D() {
     val sprite = animatedSprite {
         name = "Skin"
     }
-
-    var anchorX: Float by sprite::anchorX
-    var anchorY: Float by sprite::anchorY
+    var anchorX: Float
+        get() = sprite.anchorX
+        set(value) {
+            sprite.anchorX = value
+        }
+    var anchorY: Float
+        get() = sprite.anchorY
+        set(value) {
+            sprite.anchorY = value
+        }
 
     var cx: Int = 0
     var cy: Int = 0
