@@ -4,10 +4,7 @@ import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graph.node.node2d.Node2D
-import com.lehaine.littlekt.graphics.Batch
-import com.lehaine.littlekt.graphics.Camera
-import com.lehaine.littlekt.graphics.ParticleSimulator
-import com.lehaine.littlekt.graphics.TextureSlice
+import com.lehaine.littlekt.graphics.*
 import com.lehaine.littlekt.graphics.shape.ShapeRenderer
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
@@ -54,7 +51,7 @@ class ParticleSimulatorRenderable : Node2D() {
                     scaleX = it.scaleX * globalScaleX * ppuInv,
                     scaleY = it.scaleY * globalScaleY * ppuInv,
                     rotation = it.rotation + rotation,
-                    colorBits = it.colorBits
+                    colorBits = it.color.toFloatBits()
                 )
             }
         }

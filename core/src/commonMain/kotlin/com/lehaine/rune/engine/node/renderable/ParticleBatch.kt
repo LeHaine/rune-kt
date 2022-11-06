@@ -8,6 +8,7 @@ import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
 import com.lehaine.littlekt.graphics.Particle
 import com.lehaine.littlekt.graphics.shape.ShapeRenderer
+import com.lehaine.littlekt.graphics.toFloatBits
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds
 import com.lehaine.littlekt.util.fastForEach
@@ -62,7 +63,7 @@ class ParticleBatch : Node2D() {
                     scaleX = it.scaleX * globalScaleX * ppuInv,
                     scaleY = it.scaleY * globalScaleY * ppuInv,
                     rotation = it.rotation + rotation,
-                    colorBits = it.colorBits
+                    colorBits = it.color.toFloatBits()
                 )
             }
         }
