@@ -111,8 +111,8 @@ open class Entity(val gridCellSize: Float) : Node2D() {
                 attachY
             }
         }
-    val attachX get() = ((cx + xr) * gridCellSize) * ppuInv
-    val attachY get() = ((cy + yr) * gridCellSize) * ppuInv
+    open val attachX get() = ((cx + xr) * gridCellSize) * ppuInv
+    open val attachY get() = ((cy + yr) * gridCellSize) * ppuInv
     val centerX get() = attachX + (0.5f - anchorX) * gridCellSize
     val centerY get() = attachY + (0.5f - anchorY) * gridCellSize
     val top get() = attachY - anchorY * height * ppuInv
