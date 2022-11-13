@@ -43,15 +43,13 @@ open class AnimatedSprite : Sprite() {
         player.update(dt)
     }
 
-    fun play(anim: Animation<TextureSlice>) = player.play(anim)
+    fun play(anim: Animation<TextureSlice>, times: Int = 1, queue: Boolean = false) = player.play(anim, times, queue)
 
     fun play(frame: TextureSlice, frameTime: Duration = 50.milliseconds, numFrames: Int = 1) =
         player.play(frame, frameTime, numFrames)
 
-    fun play(animation: Animation<TextureSlice>, times: Int = 1) =
-        player.play(animation, times)
-
-    fun play(animation: Animation<TextureSlice>, duration: Duration) = player.play(animation, duration)
+    fun play(animation: Animation<TextureSlice>, duration: Duration, queue: Boolean = false) =
+        player.play(animation, duration, queue)
 
     fun playLooped(animation: Animation<TextureSlice>) = player.playLooped(animation)
 
