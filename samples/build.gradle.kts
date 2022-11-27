@@ -17,7 +17,7 @@ kotlin {
         compilations {
             val main by getting
 
-            val mainClass = "com.lehaine.littlekt.samples.DisplayTestKt"
+            val mainClass = "com.lehaine.rune.PixelExampleKt"
             tasks {
                 register<Copy>("copyResources") {
                     group = "package"
