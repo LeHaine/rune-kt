@@ -3,7 +3,7 @@ package com.lehaine.rune.engine.node.renderable.entity
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
-import com.lehaine.littlekt.graphics.tilemap.ldtk.LDtkEntity
+import com.lehaine.littlekt.graphics.g2d.tilemap.ldtk.LDtkEntity
 import com.lehaine.rune.engine.GameLevel
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind

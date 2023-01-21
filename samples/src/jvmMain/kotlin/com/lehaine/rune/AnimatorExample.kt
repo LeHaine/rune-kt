@@ -6,7 +6,7 @@ import com.lehaine.littlekt.createLittleKtApp
 import com.lehaine.littlekt.file.vfs.readTexture
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
-import com.lehaine.littlekt.graph.node.component.HAlign
+import com.lehaine.littlekt.graph.node.resource.HAlign
 import com.lehaine.littlekt.graph.node.ui.label
 import com.lehaine.littlekt.graph.node.viewport
 import com.lehaine.littlekt.graphics.Color
@@ -14,7 +14,10 @@ import com.lehaine.littlekt.graphics.slice
 import com.lehaine.littlekt.math.isFuzzyEqual
 import com.lehaine.littlekt.util.seconds
 import com.lehaine.littlekt.util.viewport.ExtendViewport
-import com.lehaine.rune.engine.*
+import com.lehaine.rune.engine.ActionCreator
+import com.lehaine.rune.engine.Rune
+import com.lehaine.rune.engine.RuneSceneDefault
+import com.lehaine.rune.engine.actionCreator
 import com.lehaine.rune.engine.node.renderable.Sprite
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -77,7 +80,7 @@ class AnimatorExampleScene(context: Context) : RuneSceneDefault(context) {
                         player.laugh()
                     }
                     wait(3.seconds) {
-                        player.move(3,3)
+                        player.move(3, 3)
                     }
                 }
             }

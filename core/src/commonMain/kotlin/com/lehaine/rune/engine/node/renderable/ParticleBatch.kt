@@ -4,10 +4,10 @@ import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graph.node.node2d.Node2D
-import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
-import com.lehaine.littlekt.graphics.Particle
-import com.lehaine.littlekt.graphics.shape.ShapeRenderer
+import com.lehaine.littlekt.graphics.g2d.Batch
+import com.lehaine.littlekt.graphics.g2d.Particle
+import com.lehaine.littlekt.graphics.g2d.shape.ShapeRenderer
 import com.lehaine.littlekt.graphics.toFloatBits
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.calculateViewBounds

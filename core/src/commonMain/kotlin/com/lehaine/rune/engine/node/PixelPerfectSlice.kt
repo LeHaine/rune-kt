@@ -6,11 +6,11 @@ import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
 import com.lehaine.littlekt.graph.node.node2d.Node2D
 import com.lehaine.littlekt.graph.node.render.Material
-import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Camera
-import com.lehaine.littlekt.graphics.TextureSlice
+import com.lehaine.littlekt.graphics.g2d.Batch
+import com.lehaine.littlekt.graphics.g2d.TextureSlice
+import com.lehaine.littlekt.graphics.g2d.shape.ShapeRenderer
 import com.lehaine.littlekt.graphics.shader.ShaderProgram
-import com.lehaine.littlekt.graphics.shape.ShapeRenderer
 import com.lehaine.littlekt.graphics.slice
 import com.lehaine.rune.engine.shader.PixelSmoothFragmentShader
 import com.lehaine.rune.engine.shader.PixelSmoothVertexShader

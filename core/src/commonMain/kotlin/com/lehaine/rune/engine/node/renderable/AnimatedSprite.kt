@@ -3,9 +3,9 @@ package com.lehaine.rune.engine.node.renderable
 import com.lehaine.littlekt.graph.node.Node
 import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.annotation.SceneGraphDslMarker
-import com.lehaine.littlekt.graphics.Animation
-import com.lehaine.littlekt.graphics.AnimationPlayer
-import com.lehaine.littlekt.graphics.TextureSlice
+import com.lehaine.littlekt.graphics.g2d.Animation
+import com.lehaine.littlekt.graphics.g2d.AnimationPlayer
+import com.lehaine.littlekt.graphics.g2d.TextureSlice
 import com.lehaine.littlekt.util.SingleSignal
 import com.lehaine.littlekt.util.signal1v
 import kotlin.contracts.ExperimentalContracts

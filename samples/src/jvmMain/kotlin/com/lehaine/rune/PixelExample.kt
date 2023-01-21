@@ -9,7 +9,9 @@ import com.lehaine.littlekt.graph.node.addTo
 import com.lehaine.littlekt.graph.node.canvasLayer
 import com.lehaine.littlekt.graph.node.ui.control
 import com.lehaine.littlekt.graph.node.ui.label
-import com.lehaine.littlekt.graphics.*
+import com.lehaine.littlekt.graphics.Color
+import com.lehaine.littlekt.graphics.g2d.*
+import com.lehaine.littlekt.graphics.slice
 import com.lehaine.littlekt.input.Key
 import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.random
@@ -171,11 +173,11 @@ class PixelExampleScene(context: Context) : RuneSceneDefault(context) {
             if (context.input.isKeyPressed(Key.A)) {
                 xDir = -1
             }
-            if(context.input.isKeyJustPressed(Key.ENTER)) {
+            if (context.input.isKeyJustPressed(Key.ENTER)) {
                 stretchX = 2f
             }
 
-            dir = if(xDir != 0) xDir else dir
+            dir = if (xDir != 0) xDir else dir
         }
 
         override fun fixedUpdate() {

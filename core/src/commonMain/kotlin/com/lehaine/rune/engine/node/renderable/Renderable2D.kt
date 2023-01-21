@@ -1,8 +1,8 @@
 package com.lehaine.rune.engine.node.renderable
 
 import com.lehaine.littlekt.graph.node.node2d.Node2D
-import com.lehaine.littlekt.graphics.Batch
 import com.lehaine.littlekt.graphics.Color
+import com.lehaine.littlekt.graphics.g2d.Batch
 import com.lehaine.littlekt.input.Input
 import com.lehaine.littlekt.math.Mat3
 import com.lehaine.littlekt.math.MutableVec2f
