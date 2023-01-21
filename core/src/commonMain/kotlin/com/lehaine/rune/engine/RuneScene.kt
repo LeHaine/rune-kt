@@ -4,6 +4,8 @@ import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.graph.SceneGraph
 import com.lehaine.littlekt.graph.addDefaultUiInput
 import com.lehaine.littlekt.graphics.Color
+import com.lehaine.littlekt.graphics.Textures
+import com.lehaine.littlekt.graphics.g2d.TextureSlice
 import com.lehaine.littlekt.graphics.gl.ClearBufferMask
 import com.lehaine.littlekt.util.viewport.ScreenViewport
 import com.lehaine.littlekt.util.viewport.Viewport
@@ -18,10 +20,12 @@ open class RuneScene<T>(
         context.graphics.height
     ),
     uiInputSignals: UiInputSignals<T>,
+    whitePixel: TextureSlice = Textures.white
 ) : SceneGraph<T>(
     context,
     viewport,
-    uiInputSignals = uiInputSignals
+    uiInputSignals = uiInputSignals,
+    whitePixel = whitePixel
 ) {
 
     val graphics get() = context.graphics
@@ -74,5 +78,6 @@ open class RuneSceneDefault(
         "ui_down",
         "ui_home",
         "ui_end"
-    )
-) : RuneScene<String>(context, viewport, uiInputSignals)
+    ),
+    whitePixel: TextureSlice = Textures.white
+) : RuneScene<String>(context, viewport, uiInputSignals, whitePixel)
