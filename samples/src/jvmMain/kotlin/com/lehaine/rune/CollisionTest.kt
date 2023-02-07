@@ -34,7 +34,7 @@ class CollisionTestScene(context: Context) : RuneSceneDefault(context) {
         val cyanBits = Color.CYAN.toFloatBits()
         val redBits = Color.RED.toFloatBits()
 
-        showDebugInfo = true
+        requestShowDebugInfo = true
 
         val dummies = mutableListOf<Entity>()
         val player = Entity(8f).apply {
