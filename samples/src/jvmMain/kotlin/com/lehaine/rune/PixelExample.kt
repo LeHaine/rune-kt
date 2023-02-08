@@ -10,6 +10,7 @@ import com.lehaine.littlekt.graph.node.canvasLayer
 import com.lehaine.littlekt.graph.node.ui.control
 import com.lehaine.littlekt.graph.node.ui.label
 import com.lehaine.littlekt.graphics.Color
+import com.lehaine.littlekt.graphics.HdpiMode
 import com.lehaine.littlekt.graphics.g2d.*
 import com.lehaine.littlekt.graphics.slice
 import com.lehaine.littlekt.input.Key
@@ -41,13 +42,17 @@ import kotlin.time.Duration.Companion.milliseconds
 class PixelExample(context: Context) : Rune(context) {
 
     override suspend fun Context.create() {
+        println("OpenGL version is: ${graphics.glVersion}")
+        println("OpenGL Combined: ${graphics.glVersion.combined}")
+        println("Is OpenGL atleast 3.2? ${graphics.glVersion.atleast(3, 2)}")
+        println("System OS: ${System.getProperty("os.name")}")
         scene = PixelExampleScene(context)
     }
 }
 
 class PixelExampleScene(context: Context) : RuneSceneDefault(context) {
 
-    override var ppu: Float = 8f
+    override var ppu: Float = 1f
     private val particleSimulator = ParticleSimulator(2048)
     private lateinit var topNormal: ParticleBatch
     private lateinit var smallCircle: TextureSlice
@@ -197,6 +202,7 @@ fun main() {
         width = 960
         height = 540
         backgroundColor = Color.DARK_GRAY
+        hdpiMode = HdpiMode.PIXELS
     }.start {
         PixelExample(it)
     }

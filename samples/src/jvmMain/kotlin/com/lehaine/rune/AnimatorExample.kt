@@ -10,6 +10,7 @@ import com.lehaine.littlekt.graph.node.resource.HAlign
 import com.lehaine.littlekt.graph.node.ui.label
 import com.lehaine.littlekt.graph.node.viewport
 import com.lehaine.littlekt.graphics.Color
+import com.lehaine.littlekt.graphics.HdpiMode
 import com.lehaine.littlekt.graphics.slice
 import com.lehaine.littlekt.math.isFuzzyEqual
 import com.lehaine.littlekt.util.seconds
@@ -160,6 +161,7 @@ fun main() {
         width = 960
         height = 540
         backgroundColor = Color.DARK_GRAY
+        hdpiMode = HdpiMode.PIXELS
     }.start {
         AnimatorExample(it)
     }
